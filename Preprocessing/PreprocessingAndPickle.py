@@ -9,19 +9,17 @@ Function:
 		- cropping into square
 		- resizing to 64x64
 		- convert to grayscale
+		- mapping them to interval [-1,1]
+		- expanding their dimensions by an "empty" third dimension
 	2) Dumps Images into a pickle 
 
-
 Usage:
-	- Provide path of the folder with the images to be
-	preprocessed --> "pic_folder_path"
-
-	- Provide path + name for a folder to be created, in which the pickle will dump
-
+	- Provide path of the folder with the images to bepreprocessed
+	- Provide path in which the pickle will dump
 	- Provide Name of the file the pickled-file
 '''
 
-def preprocessing(pic_folder_path='./celebAPics', pickle_path='./pickle_Data', pickle_name="CelebA_pickle.dat"):
+def preprocessing(pic_folder_path='../Data/Unprocessed_Images', pickle_path='../Data', pickle_name="CelebA_pickle.dat"):
 
 	
 
