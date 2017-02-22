@@ -18,3 +18,9 @@ Sample Img
 * PIL: Dependecy for opencv & imageio
 * opencv 2: Saving and Manipulating Images
 * imageio: Creating Gifs
+
+
+# todo
+## Dataset
+- used http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html
+- [Link to Pickle/PrePro Images?]
