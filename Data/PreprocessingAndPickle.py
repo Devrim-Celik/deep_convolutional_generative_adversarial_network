@@ -19,7 +19,7 @@ Usage:
 	- Provide Name of the file the pickled-file
 '''
 
-def preprocessing(pic_folder_path='../Data/Unprocessed_Images', pickle_path='../Data', pickle_name="CelebA_pickle.dat"):
+def preprocessing(pic_folder_path='../data/unprocessed_images', pickle_path='../data', pickle_name="celeba_pickle.dat"):
 
 	# list, where we save our pictures so we can dump them later
 	IMG_LIST = []
