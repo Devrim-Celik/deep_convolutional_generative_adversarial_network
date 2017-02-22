@@ -6,7 +6,10 @@ A Deep Convolutional Generative Adverserial Network for our final task in "Imple
 Sample Gif
 
 ![](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/Images-Gifs/sampleImg.jpg)
-Sample Img
+Sample Img 64x64
+
+![](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/000002.jpg)
+Sample Img 320x320
 
 ## Required:
 * Python 3.5
