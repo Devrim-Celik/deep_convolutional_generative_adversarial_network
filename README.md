@@ -8,7 +8,7 @@ Sample Gif
 ![](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/Images-Gifs/sampleImg.jpg)
 Sample Img 64x64
 
-![](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/Images-Gifs/preprocessed_5x5.png)
+![](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/Images-Gifs/preprocessedImgs_5x5.png)
 Sample Img 320x320
 
 ## Required:
