@@ -1,5 +1,5 @@
 import scipy.misc
-
+import numpy as np
 '''
 Function: Able to display multiple Images in an neat way, as a grid of images
 
