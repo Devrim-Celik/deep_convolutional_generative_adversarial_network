@@ -2,7 +2,8 @@ import pickle
 import random
 
 '''
-Function: Creates an Object, which is able to supply data
+Function: Creates an Object, which is able to create Batches
+ 
 '''
 
 class CelebA():
