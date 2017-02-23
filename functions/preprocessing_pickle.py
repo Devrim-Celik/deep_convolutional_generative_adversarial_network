@@ -22,43 +22,57 @@ Usage:
 	- Provide Name of the file the pickled-file
 '''
 
-def preprocessing(pic_folder_path=file_path+'/data/unprocessed_images', pickle_path=file_path+'/data/pickle', pickle_name="celeba_pickle.dat"):
-	# list, where we save our pictures so we can dump them later
-	IMG_LIST = []
+def preprocessing(pic_folder_path=file_path+'/data/unprocessed_images', 
+	pickle_path=file_path+'/data/pickle', pickle_name="celeba_pickle.dat"):
 	
 	print('[*] Preprocessing started. This may take a while...')
+
+	# list, where we save our pictures so we can dump them later
+	IMG_LIST = []
+
+	# list with all file_names
 	file_list = os.listdir(pic_folder_path)
 
-	imagefiles = [f for f in os.listdir(pic_folder_path) if os.path.isfile(os.path.join(pic_folder_path, f))]
+	# 
+	file_list = [f for f in file_list if (f.endswith(".jpg") or f.endswith(".png"))]
 
-	n_leading_zeros = len(str(len(file_list)))-1
 	# iterate through every element in the directory
-	for counter in range(len(file_list)):
+	for counter in range(len(file_list)):	
 
-		img = cv2.imread(pic_folder_path + '/' + imagefiles[counter])	# Read img
+		#read img
+		img = cv2.imread(pic_folder_path + '/' + file_list[counter])	#
+		
 		# check whether its a picture
 		# apply cropping
 		img = img[20:198,:]
+		
 		# resize img to 64x64
 		img = cv2.resize(img, (64, 64)) 
+		
 		# convert to greyscale
 		img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+		
 		# bring to range -1 to 1
 		img = (img/255.0-0.5)*2.0
+		
 		# expand dimensions so its compatible with placeholder function
 		img = np.expand_dims(img,-1)
+
 
 		# append to "IMG_LIST"
 		IMG_LIST.append(img)
 
-		if counter%np.floor((len(imagefiles)/100))==0 or counter==len(imagefiles)-1:
-			print(str(counter) + ' of ' + str(len(imagefiles)) + ' images processed')
+		# print
+		if counter%np.floor((len(file_list)/100))==0 or counter==len(file_list)-1:
+			print(str(counter) + ' of ' + str(len(file_list)) + ' images processed')
 
-	# Dump the img list into a file
+	# dump the img list into a file
 	with open(pickle_path+'/'+pickle_name, 'wb') as f:
 		pickle.dump(IMG_LIST, f)
 
-	print('\t[+] Preprocessing finished. Your pickle is saved in ' + pickle_path + '/' + pickle_name)
+	# positive feedback
+	print('\t[+] Preprocessing finished. Your pickle is saved in ' \
+		+ pickle_path + '/' + pickle_name)
 
 if __name__=='__main__':
 	preprocessing()
