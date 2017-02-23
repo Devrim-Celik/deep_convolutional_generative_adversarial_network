@@ -10,7 +10,7 @@ Dataset-Images next to Gif of training
     + ```/data```: For storing the training images and the pickle file for training
     + ```/docs```: Documentation
     + ```/function```: Functions used for preprocessing, visualisation ...
-    + ```/save```: For saving pictures which were produces during training & storing weights
+    + ```/save```: For saving pictures which were produces during training & storing weights & plots of loss ...
 
 - Scripts
     + ```dc_gan.py```: main script
@@ -41,7 +41,6 @@ Note: Written for **Python 3**
 ## Instructions: Apply Preprocessing
 In case you want to use your own images, store them in ```/data/unprocessed_images```. Next of, execute the ```/functions/preprocessing_pickle.py```/ script. It will preprocess those images and store them in a pickle-file in ```/data/pickle```.
 
-
 ## Instructions: Training
 It is necessary to provide a pickle-file in  ```/data/pickle```. Either create it yourself or download it from the above link.
 
@@ -50,32 +49,35 @@ To simply train the network, either just execute the file or provide the argumen
 python3 dc_gan.py
 python3 dc_gan.py -train
 ```
-By supplying an integer after ```-size```, you can change the batch size during training (by default: **64**, at least 25). If you also supply an integer after ```-nbatch``` , you can change the number of batches (by default **1000**).
+By supplying an integer after ```-nbatch``` , you can change the number of batches used to train (by default **1000**).
 ```
-python3 dc_gan.py -size 128
 python3 dc_gan.py -nbatch 5000
-python3 dc-gan.py -size 32 -nbatch 2000
 ```
 In case you want to reload model-paramters and train on them (by default they have to be provided in ```/save/model```), provide the ```-load``` option. 
 ```
 python3 dc_gan.py -train -load
 ```
-If you also want the images (generated during training) saved and the loss and the number of updates of the Networks (in recent iterations) plotted, provide the ```-vis``` option additionally.
+If you also want the images (generated during training) and the loss and the number of updates of the Networks (in recent iterations) saved (in ```/save/figs```) , provide the ```-vis``` option additionally.
 ```
 python3 dc_gan.py -train -vis
 ```
 
+###### Note: ```python3 dc_gan.py``` is equivalent to ```python3 dc_gan.py -train -vis```
+
 ## Instructions: Testing
-In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` to generate a ```n*n``` picture (by default **5x5**). The generated pictures will be saved in ```/my_imgs```.
+In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` to generate a ```n*n``` picture (by default **5x5**, between 1 and 10). The generated pictures will be saved in ```/my_imgs```.
 ```
 python3 dc_gan.py -test 10
 ```
-If you want to see the influence. TODO via **z-interpolation**, provide the ```-z``` tag, instead of ```-n```tag.
+If you want to see the influence. TODO via **z-interpolation**, provide the ```-z``` tag, instead of ```n```tag.
 ```
 python3 dc_gan.py -test -z
 ```
 
-
+###### Note: In case you supply both ```-train``` and ```-test``` the Network woll first train and then test.
+```
+python3 dc_gan.py -train -test ...
+```
 
 ## Implementation details
 ### SAMPLE TODO!
