@@ -1,3 +1,6 @@
-.DS_Store
+*.dat
+*.png
+*.jpg
+*.DS_Store
 __pycache__
-.swp
+*.swp

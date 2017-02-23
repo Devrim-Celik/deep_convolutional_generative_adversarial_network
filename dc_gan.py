@@ -17,7 +17,7 @@ import os
 import os.path
 
 from functions.auxiliary_functions import merge_and_save
-from celeba_input import CelebA
+from functions.celeba_input import CelebA
 
 # ####################################
 # ######## Training Parameters #######
