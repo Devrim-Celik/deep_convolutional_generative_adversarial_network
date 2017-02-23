@@ -47,8 +47,8 @@ print_varnames = True
 # ####################################
 # ### Creation of Sample-Supplier ####
 # ####################################
-#sampleGen = CelebA() #TODO FIX
-celeba = input_celeba.load_celeba()
+sampleGen = CelebA() #TODO FIX
+#celeba = input_celeba.load_celeba()
 
 # ##################################################################
 # ##################### Auxiliary Functions ######################## #todo change???
@@ -170,7 +170,11 @@ Gz = generator(Z) # generates images from Z
 Dx = distinguisher(X) # produces probabilities for real images
 Dg = distinguisher(Gz, reuse=True) # produces probabilities for generator images
 
-# define loss functions
+
+# ####################################
+# ########## Training Setup ##########
+# ####################################
+
 D_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dx), labels=tf.ones(batch_size,1)) \
 						 + tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.zeros(batch_size,1)))
 G_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.ones(batch_size,1)))
@@ -251,11 +255,9 @@ with tf.Session() as sess:
 		print(str(i))
 		# create inputs
 		z_in = np.random.uniform(-1.0, 1.0, size=[batch_size,Z_size]).astype(np.float32)
-		#x_in = sampleGen.get_batch(batch_size) # Devrim Changed this
-		x_in = random.sample(celeba,batch_size) # draw a sample batch from MNIST dataset
-		#x_in = ((x_in/255.0) - 0.5) * 2.0 # transform images to be between -1 and 1
-		#x_in = np.lib.pad(x_in, ((0,0),(2,2),(2,2),(0,0)),'constant', constant_values=(-1, -1)) #Pad the images so the are 32x32
-	
+		x_in = sampleGen.get_batch(batch_size) # Devrim Changed this
+		#x_in = random.sample(celeba,batch_size) # draw a sample batch from MNIST dataset
+
 		# update distinguisher and generator
 		if D_optimize:
 			dis_up = dis_up + 1
@@ -336,15 +338,9 @@ with tf.Session() as sess:
 
 	print('')
 
-# ######################
-# ### TRAINING PLOTS ###
-# ######################
-
 # ##################################################################
 # ######################## Training Plots ##########################
 # ##################################################################
-
-
 
 plt.figure()
 plt.subplot(311)

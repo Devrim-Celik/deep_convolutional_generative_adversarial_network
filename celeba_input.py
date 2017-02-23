@@ -1,5 +1,6 @@
 import pickle
 import random
+import numpy as np  # just for now
 '''
 Function: Creates an Object, which is able to create Batches
  
@@ -15,6 +16,7 @@ class CelebA():
 		# Take random sample out of "current", until it is to small to take a batch
 		# and then fill it up using "whole_Data"
 		self.current = data
+
 
 	def get_batch(self, batch_size):
 
@@ -41,7 +43,13 @@ class CelebA():
 		else:
 			#take your batch from "current"
 			batch = self.current[:batch_size]
+
 			#delete those you took out from "current"
 			self.current = self.current[batch_size:]
-
+		
+		
+		print('Temporary Dimension adding...')
+		for i in range(len(batch)):
+			batch[i] = np.expand_dims(batch[i],-1)
+		print('Temporary Dimension adding finished!')
 		return batch
