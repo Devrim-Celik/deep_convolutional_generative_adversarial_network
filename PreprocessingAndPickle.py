@@ -19,8 +19,10 @@ Usage:
 	- Provide Name of the file the pickled-file
 '''
 
-def preprocessing(pic_folder_path='../data/unprocessed_images', pickle_path='../data', pickle_name="celeba_pickle.dat"):
-
+def preprocessing(pic_folder_path='./data/unprocessed_images', pickle_path='./data/pickle', pickle_name="celeba_pickle.dat"):
+	print(pic_folder_path)
+	pic_folder_path = os.path.abspath(pic_folder_path)
+	print(pic_folder_path)
 	# list, where we save our pictures so we can dump them later
 	IMG_LIST = []
 	
