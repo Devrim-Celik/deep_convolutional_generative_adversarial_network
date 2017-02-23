@@ -12,13 +12,12 @@
 import numpy as np
 import tensorflow as tf
 import random 					
-#TODO: One of those two can be removed
+#TODO: One of those two can be removed FLEM
 import os
 import os.path
 
 from functions.auxiliary_functions import merge_and_save
 from celeba_input import CelebA
-import input_celeba
 
 # ####################################
 # ######## Training Parameters #######
@@ -29,12 +28,17 @@ n_batches = 5000
 restore_weights = True
 
 # ####################################
-# ############ Directories ########### #TODO CHANGE
+# ############ Directories ########### 
 # ####################################
 # Path, where to save sample-images
 sample_dir = './save/figs'
+if not os.path.exists(sample_dir):
+	os.makedirs(sample_dir)
+
 # Path, where to save trained model
 model_dir = './save/models'
+if not os.path.exists(model_dir):
+	os.makedirs(model_dir)
 
 # ####################################
 # ########### Print-Setting ##########
@@ -47,8 +51,8 @@ print_varnames = True
 # ####################################
 # ### Creation of Sample-Supplier ####
 # ####################################
-sampleGen = CelebA() #TODO FIX
-#celeba = input_celeba.load_celeba()
+sampleGen = CelebA()
+
 
 # ##################################################################
 # ##################### Auxiliary Functions ######################## #todo change???
@@ -158,7 +162,7 @@ def distinguisher(X, reuse=False):
 
 #todo add comm
 tf.reset_default_graph()
-initializer = tf.truncated_normal_initializer(stddev=0.02)
+#initializer = tf.truncated_normal_initializer(stddev=0.02) CHANGE: CAn delete, right?
 
 # # define placeholders for input
 Z = tf.placeholder(dtype=tf.float32, shape=[None,Z_size])
@@ -323,16 +327,12 @@ with tf.Session() as sess:
 		if (i+1)%sampleFreq == 0 or (i+1) == n_batches:
 			# z_sample = np.random.uniform(-1.0,1.0, size=[batch_size,Z_size]).astype(np.float32) # generate another z batch
 			Gz_sample = sess.run(Gz, feed_dict={Z: z_sample, drop: np.array([1.0,1.0])}) # use new z to get sample images from generator
-			if not os.path.exists(sample_dir):
-				os.makedirs(sample_dir)
 			if i==0:
 				print(Gz_sample.shape)
 			merge_and_save(np.reshape(Gz_sample[0:36],[36,64,64]),[6,6],sample_dir+'/fig'+str(i)+'.png')
 
 		# save model weights after n=saveFreq batches
 		if (i+1)%saveFreq == 0 or (i+1) == n_batches:
-			if not os.path.exists(model_dir):
-				os.makedirs(model_dir)
 			saver.save(sess,model_dir+'/model.ckpt', global_step=i)
 			print(' ==> model saved (b'+str(i+1)+')')
 
