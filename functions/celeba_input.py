@@ -4,7 +4,7 @@ import os
 import numpy as np  # just for now
 
 
-old = False
+old = True
 file_path = ('/'.join(os.path.realpath(__file__).split("/")[:-2]))
 
 '''
@@ -12,16 +12,20 @@ Function: Creates an Object, which is able to create Batches
  
 '''
 
+def get_data(filename):
+	with open(filename, "rb") as f:
+		data = pickle.load(f)
+	return data
+
 class CelebA():
 
 	def __init__(self, filename= file_path + "/data/pickle/celeba_pickle.dat"):
-		with open(filename, "rb") as f:
-			data = pickle.load(f)
+
 		# Save Whole Data Set in "whole_Data"
-		self.whole_Data = data
+		self.filename = filename
 		# Take random sample out of "current", until it is to small to take a batch
-		# and then fill it up using "whole_Data"
-		self.current = data
+		# and then fill it up using "whole_Data"with
+		self.current = get_data(self.filename)
 
 
 	def get_batch(self, batch_size):
@@ -36,8 +40,8 @@ class CelebA():
 			batch = self.current
 
 			#shuffle "whole_Data" and assign it to the "current" data	
-			random.shuffle(self.whole_Data)
-			self.current = self.whole_Data
+			self.current = get_data(self.filename)
+			random.shuffle(self.current)
 
 			#take the missing samples:
 			batch += self.current[:missing]
@@ -54,8 +58,7 @@ class CelebA():
 			self.current = self.current[batch_size:]
 		
 		if old:
-			print('Temporary Dimension adding...')
 			for i in range(len(batch)):
 				batch[i] = np.expand_dims(batch[i],-1)
-			print('Temporary Dimension adding finished!')
+				batch[i] = (batch[i]/255.0 - 0.5) * 2.0
 		return batch

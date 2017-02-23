@@ -8,7 +8,7 @@
 # ##################### Imports and Setting ########################
 # ##################################################################
 
-#TODO import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import random 					
@@ -23,7 +23,7 @@ from functions.celeba_input import CelebA
 # ######## Training Parameters #######
 # ####################################
 Z_size = 100
-batch_size = 128
+batch_size = 32
 n_batches = 5000
 restore_weights = True
 
@@ -58,13 +58,24 @@ sampleGen = CelebA()
 # ##################### Auxiliary Functions ######################## #todo change???
 # ##################################################################
 
-# rectified linear unit
+# leaky rectified linear unit
 def lrelu(x, leak=0.2, name="lrelu"):
-	 with tf.variable_scope(name):
-		 f1 = 0.5 * (1 + leak)
-		 f2 = 0.5 * (1 - leak)
-		 return f1 * x + f2 * abs(x)
+	with tf.variable_scope(name):
+		f1 = 0.5 * (1 + leak)
+		f2 = 0.5 * (1 - leak)
+		return f1 * x + f2 * abs(x)
 
+# TODO
+def check_update(fake_acc, real_acc, thresh1, thresh2):
+	D_opt = True
+	G_opt = True
+	if fake_acc < thresh2 or real_acc < thresh2:
+		D_opt = True
+		G_opt = False
+	if ((fake_acc + real_acc) / 2) > thresh1:
+		D_opt = False
+		G_opt = True
+	return D_opt,G_opt 
 
 # ##################################################################
 # ################ Definition of Network Elements ##################
@@ -135,25 +146,26 @@ def trans2d_layer(layer_input, W_shape, output_shape, b_shape=[-2], strides=[1,1
 def generator(Z, reuse=False):
 	state = dense_layer(Z, W_shape=[Z_size,512*4*4], activation=tf.nn.relu, batch_norm=True, norm_before_act=True, reuse=reuse, varscope='g_fc1', namescope='generator')
 	state = tf.reshape(state, [batch_size,4,4,512])
-	state = trans2d_layer(layer_input=state, W_shape=[3,3,256,512], output_shape=[batch_size,8,8,256], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans1', namescope='generator')
-	state = trans2d_layer(layer_input=state, W_shape=[4,4,128,256], output_shape=[batch_size,16,16,128], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans2',namescope='generator')
+	state = trans2d_layer(layer_input=state, W_shape=[5,5,256,512], output_shape=[batch_size,8,8,256], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans1', namescope='generator')
+	state = trans2d_layer(layer_input=state, W_shape=[5,5,128,256], output_shape=[batch_size,16,16,128], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans2',namescope='generator')
+	# state = tf.nn.dropout(state,drop[1])
 	state = trans2d_layer(layer_input=state, W_shape=[5,5,32,128], output_shape=[batch_size,32,32,32], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans3',namescope='generator')
-	state = trans2d_layer(layer_input=state, W_shape=[6,6,16,32], output_shape=[batch_size,64,64,16], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans4',namescope='generator')
-	state = tf.nn.dropout(state,drop[1])
-	state = trans2d_layer(layer_input=state, W_shape=[7,7,1,16], b_shape=[0], output_shape=[batch_size,64,64,1], strides=[1,1,1,1], activation=tf.nn.tanh, batch_norm=False, reuse=reuse, varscope='g_trans5',namescope='generator')
+	state = trans2d_layer(layer_input=state, W_shape=[5,5,16,32], output_shape=[batch_size,64,64,16], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans4',namescope='generator')
+	state = trans2d_layer(layer_input=state, W_shape=[5,5,1,16], b_shape=[0], output_shape=[batch_size,64,64,1], strides=[1,1,1,1], activation=tf.nn.tanh, batch_norm=False, reuse=reuse, varscope='g_trans5',namescope='generator')
 	return state
 
 # ####################################
 # ####### Distinguisher Setup ########
 # ####################################
 def distinguisher(X, reuse=False):
-	state = conv2d_layer(layer_input=X, W_shape=[4,4,1,32], b_shape=[0], strides=[1,2,2,1], activation=lrelu, reuse=reuse, varscope='d_conv1', namescope='distinguisher') # ==> ?
-	state = conv2d_layer(layer_input=state, W_shape=[4,4,32,32], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv2', namescope='distinguisher') # ==> ?
-	state = conv2d_layer(layer_input=state, W_shape=[4,4,32,64], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv3', namescope='distinguisher') 
-	state = tf.nn.max_pool(state, ksize=[1,2,2,1], strides=[1,2,2,1], padding="SAME")
-	state = tf.reshape(state, [batch_size,64*4*4])
+	state = conv2d_layer(layer_input=X, W_shape=[6,6,1,64], b_shape=[0], strides=[1,2,2,1], activation=lrelu, reuse=reuse, varscope='d_conv1', namescope='distinguisher') # ==> ?
+	state = conv2d_layer(layer_input=state, W_shape=[4,4,64,64], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv2', namescope='distinguisher') # ==> ?
 	state = tf.nn.dropout(state,drop[0])
-	state = dense_layer(state, [64*4*4,1], activation=tf.nn.sigmoid, reuse=reuse, varscope='d_fc1', namescope='distinguisher')
+	state = conv2d_layer(layer_input=state, W_shape=[4,4,64,128], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv3', namescope='distinguisher') 
+	state = tf.nn.max_pool(state, ksize=[1,2,2,1], strides=[1,2,2,1], padding="SAME")
+	state = tf.reshape(state, [batch_size,128*4*4])
+	state = tf.nn.dropout(state,drop[0])
+	state = dense_layer(state, [128*4*4,1], activation=tf.nn.sigmoid, reuse=reuse, varscope='d_fc2', namescope='distinguisher')
 	return state
 
 # ##################################################################
@@ -162,7 +174,7 @@ def distinguisher(X, reuse=False):
 
 #todo add comm
 tf.reset_default_graph()
-#initializer = tf.truncated_normal_initializer(stddev=0.02) CHANGE: CAn delete, right?
+initializer = tf.truncated_normal_initializer(stddev=0.02)
 
 # # define placeholders for input
 Z = tf.placeholder(dtype=tf.float32, shape=[None,Z_size])
@@ -174,7 +186,6 @@ Gz = generator(Z) # generates images from Z
 Dx = distinguisher(X) # produces probabilities for real images
 Dg = distinguisher(Gz, reuse=True) # produces probabilities for generator images
 
-
 # ####################################
 # ########## Training Setup ##########
 # ####################################
@@ -182,9 +193,6 @@ Dg = distinguisher(Gz, reuse=True) # produces probabilities for generator images
 D_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dx), labels=tf.ones(batch_size,1)) \
 						 + tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.zeros(batch_size,1)))
 G_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.ones(batch_size,1)))
-	# ALTERNATIVE LOSS FUNCTIONS #Todo should delete?
-# D_lossfun = -tf.reduce_mean(tf.log(Dx) + tf.log(1.-Dg)) #This optimizes the discriminator.
-# G_lossfun = -tf.reduce_mean(tf.log(Dg)) #This optimizes the generator.
 
 #G_perf = tf.reduce_mean(tf.equal(tf.round(Dg),tf.ones(batch_size,1)))
 Dx_perf = tf.reduce_mean(tf.cast(tf.equal(tf.round(Dx),tf.ones(batch_size,1)),"float"))
@@ -212,9 +220,8 @@ G_update = G_optimizer.apply_gradients(G_gradients)
 # ##################### Training of Network ########################
 # ##################################################################
 
-
 if print_varnames:
-	print('\nVARIABLE NAMES:\n----------------------------------------------------')
+	print('\nVARIABLE NAMES:\n----------------------------------------------------\n')
 	print([v.name for v in tf.trainable_variables()])
 
 init = tf.global_variables_initializer()
@@ -241,13 +248,10 @@ with tf.Session() as sess:
 	D_update_history = []
 	G_update_history = []
 	
-	threshold = 0.90
-	threshold2 = 0.70
 	D_optimize = True
 	G_optimize = True
 
-	D_dropout = 0.5
-	G_dropout = 0.5
+	# first dis dropout, second gen dropout
 	dropout = np.array([0.5,0.5])
 
 	z_sample = np.random.uniform(-1.0,1.0, size=[batch_size,Z_size]).astype(np.float32) # generate a z batch
@@ -256,60 +260,35 @@ with tf.Session() as sess:
 	gen_up = 0
 
 	for i in range(n_batches):
-		print(str(i))
+
+		tf.reset_default_graph()
+		tf.set_random_seed(1)
+
 		# create inputs
 		z_in = np.random.uniform(-1.0, 1.0, size=[batch_size,Z_size]).astype(np.float32)
 		x_in = sampleGen.get_batch(batch_size) # Devrim Changed this
-		#x_in = random.sample(celeba,batch_size) # draw a sample batch from MNIST dataset
 
 		# update distinguisher and generator
 		if D_optimize:
 			dis_up = dis_up + 1
 			_,D_loss = sess.run([D_update,D_lossfun],feed_dict={Z: z_in, X: x_in, drop: dropout})
+		
+		D_fake,D_real = sess.run([Dg_perf,Dx_perf],feed_dict={Z: z_in, X: x_in, drop: np.array([1.0,1.0])})
+		D_optimize, G_optimize = check_update(D_fake,D_real,0.8,0.5)
+
 		if G_optimize:
 			gen_up = gen_up + 1
 			_,G_loss = sess.run([G_update,G_lossfun],feed_dict={Z: z_in, drop: dropout})
+			z_in = np.random.uniform(-1.0, 1.0, size=[batch_size,Z_size]).astype(np.float32)
 			_,G_loss = sess.run([G_update,G_lossfun],feed_dict={Z: z_in, drop: dropout})
-
-		D_fake,D_real = sess.run([Dg_perf,Dx_perf],feed_dict={Z: z_in, X: x_in, drop: np.array([1.0,1.0])})
-
-		if D_fake < threshold2 or D_real < threshold2:
-			# D_optimize = True
-			# G_optimize = False
-			D_dropout = D_dropout * 1.1
-			G_dropout = G_dropout * 0.8
-		elif D_fake > threshold and D_real > threshold:
-			# D_optimize = False
-			# G_optimize = True
-			D_dropout = D_dropout * 0.8
-			G_dropout = G_dropout * 1.1
-		else:
-			D_dropout = 0.5
-			G_drop = 0.5
-			# D_optimize = True
-			# G_optimize = True
-
-		if D_dropout >= 1.0:
-			D_dropout = 0.99
-		if D_dropout < 0.1:
-			D_dropout = 0.1
-		if G_dropout >= 1.0:
-			G_dropout = 0.99
-		if G_dropout < 0.1:
-			G_dropout = 0.1
-
-		dropout = np.array([D_dropout, G_dropout])
-
 
 		# print progress after n=printFreq batches
 		if (i+1)%printFreq == 0 or (i+1) == n_batches:
 			print('batch '+str(i+1)+'/'+str(n_batches))
 			print('   gen loss: ' + str(G_loss) + '\n   dis loss: ' + str(D_loss))
 			print('   dis acc fake: ' + str(D_fake) + '\n   dis acc real: ' + str(D_real))
-			#print("dis updates: %.1f" % ((dis_up/(printFreq))*100))
-			#print("gen updates: %.1f" % ((gen_up/(printFreq))*100))
-			print("dis dropout: %.2f" % D_dropout)
-			print("gen dropout: %.2f" % G_dropout)
+			print("dis updates: %.1f" % ((dis_up/(printFreq))*100))
+			print("gen updates: %.1f" % ((gen_up/(printFreq))*100))
 
 			G_loss_history.append(G_loss)
 			D_loss_history.append(D_loss)
@@ -317,8 +296,8 @@ with tf.Session() as sess:
 			D_fake_history.append(D_fake)
 			D_real_history.append(D_real)
 
-			D_update_history.append(D_dropout)
-			G_update_history.append(G_dropout)
+			D_update_history.append((dis_up/(printFreq))*100)
+			G_update_history.append((gen_up/(printFreq))*100)
 
 			dis_up = 0
 			gen_up = 0

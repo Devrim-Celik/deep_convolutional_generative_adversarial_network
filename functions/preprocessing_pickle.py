@@ -1,4 +1,5 @@
 import os
+import os.path
 import cv2
 import pickle
 import numpy as np
@@ -26,33 +27,32 @@ def preprocessing(pic_folder_path=file_path+'/data/unprocessed_images', pickle_p
 	IMG_LIST = []
 	
 	print('[*] Preprocessing started. This may take a while...')
+	file_list = os.listdir(pic_folder_path)
 
+	imagefiles = [f for f in os.listdir(pic_folder_path) if os.path.isfile(os.path.join(pic_folder_path, f))]
+
+	n_leading_zeros = len(str(len(file_list)))-1
 	# iterate through every element in the directory
-	for counter, file_name in enumerate(os.listdir(pic_folder_path)):
+	for counter in range(len(file_list)):
 
+		img = cv2.imread(pic_folder_path + '/' + imagefiles[counter])	# Read img
 		# check whether its a picture
-		if file_name.endswith(".jpg") or file_name.endswith(".png"):
-			# read img
-			img = cv2.imread(pic_folder_path + '/' + file_name)
-			# apply cropping
-			img = img[20:198,:]
-			# resize img to 64x64
-			img = cv2.resize(img, (64, 64)) 
-			# convert to greyscale
-			img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-			# bring to range -1 to 1
-			img = (img/255.0-0.5)*2.0
-			# expand dimensions so its compatible with placeholder function
-			img = np.expand_dims(img,-1)
+		# apply cropping
+		img = img[20:198,:]
+		# resize img to 64x64
+		img = cv2.resize(img, (64, 64)) 
+		# convert to greyscale
+		img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+		# bring to range -1 to 1
+		img = (img/255.0-0.5)*2.0
+		# expand dimensions so its compatible with placeholder function
+		img = np.expand_dims(img,-1)
 
-			# append to "IMG_LIST"
-			IMG_LIST.append(img)
+		# append to "IMG_LIST"
+		IMG_LIST.append(img)
 
-		if counter == len(os.listdir(pic_folder_path))-1:
-			print('\t[+] All images are processed and will now be pickled!')
-
-		elif counter % 100 == 0 and counter != 0:
-			print('\t[*] '+str(counter)+' of '+str(len(os.listdir(pic_folder_path)))+' images processed...')
+		if counter%np.floor((len(imagefiles)/100))==0 or counter==len(imagefiles)-1:
+			print(str(counter) + ' of ' + str(len(imagefiles)) + ' images processed')
 
 	# Dump the img list into a file
 	with open(pickle_path+'/'+pickle_name, 'wb') as f:
