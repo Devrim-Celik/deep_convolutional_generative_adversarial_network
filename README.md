@@ -2,7 +2,8 @@
 This is an implementation of a Deep Convolutional [Generative Adverserial Network](https://en.wikipedia.org/wiki/Generative_adversarial_networks) trained using [Adam Optimizers](https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam) and [Tensorflow](https://en.wikipedia.org/wiki/TensorFlow) as our final task for our university course "Implementing Artificial Neural Networks with Tensorflow".
 
 ## Demonstration
-Dataset-Images next to Gif of training
+![](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/preprocessedImgs_5x5.png)
+![](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase.gif)
 
 ## Folders and Sripts
 - Folders
