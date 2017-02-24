@@ -1,5 +1,5 @@
 # Deep Convolutional Generative Adverserial Network
-This is an implementation of a Deep Convolutional [Generative Adverserial Network](https://en.wikipedia.org/wiki/Generative_adversarial_networks) trained using [Adam Optimizers](https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam) and [Tensorflow](https://en.wikipedia.org/wiki/TensorFlow) as our final task for our university course "Implementing Artificial Neural Networks with Tensorflow".
+This is an implementation of a Deep Convolutional [Generative Adverserial Network](https://en.wikipedia.org/wiki/Generative_adversarial_networks) trained using [Adam Optimizers](https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam). It was build using [Tensorflow](https://en.wikipedia.org/wiki/TensorFlow) and ist supposed to be our final task for our university course "Implementing Artificial Neural Networks with Tensorflow".
 
 ## Demonstration
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/preprocessedImgs_5x5.jpg "Dataset")
@@ -14,7 +14,7 @@ This is an implementation of a Deep Convolutional [Generative Adverserial Networ
     + ```/save```: For saving pictures which were produces during training & storing weights & plots of loss ...
 
 - Scripts
-    + ```dc_gan.py```: main script
+    + ```dc_gan.py```: Main script
     + ```preprocessing_pickle.py```: Applies preprocessing to images stored in ```/data/unprocessed_images``` and saves a pickle containing them in ```/save/pickle```.
     + ```celeba_input.py```: Loads pickle and supplies ```dc_gan.py``` with batches.
     + ```auxiliary_functions.py```: Contains visualisation tools and argument handling
@@ -26,28 +26,28 @@ Cloning the Repository via git:
 git clone https://github.com/D3vvy/iannwtf_DCGAN.git
 ```
 
-Make sure, you have the following installed:
+Make sure, you have the following modules installed:
 - Matplotlib: ```pip install matplotlib```
 - Numpy: ```pip install numpy```
-- PIL ```pip install PIL```
-- OpenCV2 ```pip install opencv``` or ```conda install opencv```
-- [ImageIO](https://pypi.python.org/pypi/imageio)
+- Scipy: TODO
+- PIL ```pip install PIL``` (optional: preprocessing and visualisation)
+- OpenCV2 ```pip install opencv``` or ```conda install opencv``` (optional: preprocessing)
+- [ImageIO](https://pypi.python.org/pypi/imageio) (optional: creating gifs)
 
 Dataset:
-- In this Deep Convolutional Generative Adversarial Network used the cropped and alligned version of the CelebA Datset, available [here](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
-- If you just want to to train using a pickle, you can download a preprocessed version of the dataset here TODO.
+- In this Deep Convolutional Generative Adversarial Network we used the cropped and alligned version of the CelebA Datset, available [here](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
+- If you just want to to train using a pickle file, you can download a preprocessed version of the dataset here TODO.
 
 Note: Written for **Python 3**
 
 ## Instructions: Apply Preprocessing
-In case you want to use your own images, store them in ```/data/unprocessed_images```. Next of, execute the ```/functions/preprocessing_pickle.py```/ script. It will preprocess those images and store them in a pickle-file in ```/data/pickle```.
+In case you want to use your own images, store them in ```/data/unprocessed_images```. Next of, execute the ```/functions/preprocessing_pickle.py``` script. It will preprocess those images and store them in a pickle file in ```/data/pickle```.
 
 ## Instructions: Training
 It is necessary to provide a pickle-file in  ```/data/pickle```. Either create it yourself or download it from the above link.
 
-To simply train the network, either just execute the file or provide the argument ```-train``` when doing so the file.
+To simply train the network, just execute the file and provide the argument ```-train``` when doing so.
 ```
-python3 dc_gan.py
 python3 dc_gan.py -train
 ```
 By supplying an integer after ```-nbatch``` , you can change the number of batches used to train (by default **1000**).
@@ -58,7 +58,7 @@ In case you want to reload model-paramters and train on them (by default they ha
 ```
 python3 dc_gan.py -train -load
 ```
-If you also want the images (generated during training) and the loss and the number of updates of the Networks (in recent iterations) saved (in ```/save/figs```) , provide the ```-vis``` option additionally.
+If you also want images (generated during training) created during training, the loss and the number of updates of the Networks (in recent iterations) saved (in ```/save/figs```) in form of images, provide the ```-vis``` option additionally.
 ```
 python3 dc_gan.py -train -vis
 ```
@@ -66,16 +66,16 @@ python3 dc_gan.py -train -vis
 ###### Note: ```python3 dc_gan.py``` is equivalent to ```python3 dc_gan.py -train -vis```
 
 ## Instructions: Testing
-In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` to generate a ```n*n``` picture (by default **5x5**, between 1 and 10). The generated pictures will be saved in ```/my_imgs```.
+In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` flag to generate a ```n*n``` picture (by default **5x5**, between 1 and 10). The generated pictures will be saved in ```/my_imgs```.
 ```
 python3 dc_gan.py -test 10
 ```
-If you want to see the influence. TODO via **z-interpolation**, provide the ```-z``` tag, instead of ```n```tag.
+If you want to see the results of the **z-interpolation**, provide the ```-z``` tag, instead of ```n```tag. The image will be saved in ```/save/figs```.
 ```
 python3 dc_gan.py -test -z
 ```
 
-###### Note: In case you supply both ```-train``` and ```-test``` the Network woll first train and then test.
+###### Note: In case you supply both ```-train``` and ```-test``` the Network will first train and then test.
 ```
 python3 dc_gan.py -train -test ...
 ```

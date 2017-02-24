@@ -8,7 +8,7 @@ import imageio
 #	- a path to folder, containing the images
 #	- number of frames per second
 
-def createGif(gif_name='../images-gifs/name_me.gif', image_path='.', image_duration=1):
+def createGif(gif_name='./name_me.gif', image_path='.', image_duration=0.2):
 	
 	image_list = []
 
