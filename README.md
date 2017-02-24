@@ -3,7 +3,6 @@ This is an implementation of a Deep Convolutional [Generative Adverserial Networ
 
 ## Demonstration
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/preprocessedImgs_5x5.jpg "Dataset")
-![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/arrow.jpg "arrow_right")
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase.gif "Training Progress")
 
 ## Folders and Sripts
