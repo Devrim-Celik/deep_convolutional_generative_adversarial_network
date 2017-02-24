@@ -1,7 +1,7 @@
 *.dat
+*.jpg
 *.meta
 *.png
-*.jpg
 *.DS_Store
 __pycache__
 *.swp
