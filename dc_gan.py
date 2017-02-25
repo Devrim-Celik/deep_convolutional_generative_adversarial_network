@@ -46,45 +46,28 @@ if not os.path.exists(model_dir):
 
 arg_dict = arg_parser(sys.argv)
 
-if arg_dict['help']:
-	print('--------------------- Options ---------------------\n\n')
-	
-	print('-train:\t\t Training. Without arguments equal to "-train -vis".\n')
-	print('\t-nbatch x:\t\t Train "x" batches (x has to be an integer).')
-	print('\t-load:\t\t\t Load most most advanced model.')
-	print('\t-load x:\t\t Train model with number x (e.g. 3416).')
-	print('\t-vis:\t\t\t Turn on visualizations.\n\n')
-
-	print('-test:\t\t Testing. Return image sample.\n')
-	print('-text x: \t Return x*x samples in one image.')
-	print('\t-z_int:\t\t\t Enable Z-Interpolation. Img will be saved.')
-	print('\t-z_change:\t\t Do Z-Change with a random paramter.')
-	print('\t-z_change x:\t\t Do Z-Change with a paramter number x.')
-	print('\t-vis:\t\t\t Turn on visualizations.\n\n')
-
-	print('---------------------------------------------------\n\n')
-	sys.exit()
-
 # should we train?
 train = arg_dict["train"]
 
 # should we load weight?
 restore_weights = arg_dict["load"][0]
-	# which one should we load
-		# nr was provided
+
 if restore_weights:
+	# in case the value is not the deafult 0 anymore
 	if arg_dict["load"][1] != 0:
+		# set globa_step to the provided number
 		global_step = arg_dict["load"][1]
-			# nr wasn't provided
+	# in case it still is 0 and no nr was provided
 	else:
-		#if he wants to load weight but doesnt provide a number
 		#get the one with the "highest number"
 		global_step = get_highest_model(model_dir)
 else:
+	# in case no loading is requested, start from scratch
 	global_step = 0
 
 # how many batches should we do
 if arg_dict["nbatch"][0] == False:
+	#default
 	n_batches = 2000
 else:
 	n_batches = arg_dict["nbatch"][1]
@@ -95,9 +78,12 @@ save_fig = arg_dict["vis"]
 # should we do test/ z-interpolation/ z-change
 z_inter = arg_dict["z_int"]
 
+# set z_change and its parameter. If no number of paramter was
+# requested, its a random it between 0 and 99 (bc of array)
 z_change = arg_dict["z_change"][0]
-if z_change:
-	z_param = arg_dict["z_change"][1]
+z_param = arg_dict["z_change"][1]
+
+# check if someone wants the test mode
 test = arg_dict["test"]
 if test:
 	# start from highest number model
@@ -120,7 +106,7 @@ saveFreq = np.round(20*1000/batch_size)
 sampleGen = CelebA()
 
 # ##################################################################
-# ##################### Auxiliary Functions ######################## #todo change???
+# ##################### Auxiliary Functions ########################
 # ##################################################################
 
 # leaky rectified linear unit
@@ -197,8 +183,6 @@ def trans2d_layer(layer_input, W_shape, output_shape, b_shape=[-2], strides=[1,1
 				iState = tf.nn.l2_normalize(iState, 0)
 			return activation(iState)
 
-#todo add comments flemming
-
 # ####################################
 # ######### Generator Setup ##########
 # ####################################
@@ -229,7 +213,6 @@ def distinguisher(X, reuse=False):
 # ##################################################################
 # ################ Definition of Data Flow Graph ###################
 # ##################################################################
-# todo add flem 
 tf.reset_default_graph()
 initializer = tf.truncated_normal_initializer(stddev=0.02)
 
@@ -246,7 +229,6 @@ Dg = distinguisher(Gz, reuse=True) # produces probabilities for generator images
 # ####################################
 # ########## Training Setup ##########
 # ####################################
-# todo flem
 D_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dx), labels=tf.ones(batch_size,1)) \
 						 + tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.zeros(batch_size,1)))
 G_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.ones(batch_size,1)))
@@ -272,7 +254,6 @@ G_gradients = G_optimizer.compute_gradients(G_lossfun,G_vars) #Only update the w
 D_update = D_optimizer.apply_gradients(D_gradients)
 G_update = G_optimizer.apply_gradients(G_gradients)
 
-#todo flem
 init = tf.global_variables_initializer()
 saver = tf.train.Saver(max_to_keep=10, keep_checkpoint_every_n_hours=1.0, write_version=tf.train.SaverDef.V1)
 
@@ -289,7 +270,8 @@ if train:
 
 		sess.run(init)
 		if restore_weights:
-			if os.path.isfile(model_dir+'/model.ckpt-' + str(global_step)): # model name needs to be changed manually
+			# model name needs to be changed manually
+			if os.path.isfile(model_dir+'/model.ckpt-' + str(global_step)): 
 				saver.restore(sess, model_dir+'/model.ckpt-' + str(global_step))
 				print('\n==> Model loaded from /model.ckpt-' + str(global_step) + '\n')
 		
@@ -349,7 +331,7 @@ if train:
 				G_lr_history.append(learn_rates[1])
 
 			# save samples documenting progress after n=sampleFreq batches
-			if save_fig and ((i+1)%sampleFreq == 0 or (i+1) == n_batches):
+			if save_fig: #and ((i+1)%sampleFreq == 0 or (i+1) == n_batches):
 				# use z_sample to get sample images from generator
 				Gz_sample = sess.run(Gz, feed_dict={Z: z_sample}) 
 				merge_and_save(np.reshape(Gz_sample[0:25],[25,64,64]),[5,5],sample_dir+'/fig'+str(i+global_step)+'.png')
@@ -414,7 +396,6 @@ if test:
 		sess.run(init)
 
 		# restore latest weights
-		# todo: lastest weight function
 		saver.restore(sess, model_dir+'/model.ckpt-'+ str(test_load))
 		print('\n==> Model loaded from /model.ckpt-' + str(test_load) + '\n')
 		if z_change:
@@ -422,9 +403,6 @@ if test:
 			n_imgs = 4
 			n_inter = 12
 			inter_imgs = []
-
-			if z_param == -1:
-				z_param = random.randint(0,99)
 
 			for i in range(n_imgs):
 				z_basis = np.random.uniform(-1.0,1.0, size=[1,Z_size]).astype(np.float32)
@@ -437,7 +415,7 @@ if test:
 
 			if not os.path.exists(sample_dir):
 				os.makedirs(sample_dir)
-			filename = sample_dir+'/Z-Change.png'
+			filename = sample_dir+'/Z-Change_param'+str(z_param)+'.png'
 
 			merge_and_save(np.reshape(inter_imgs[0:n_imgs*n_inter],[n_imgs*n_inter,64,64]),[n_imgs,n_inter],filename)
 			

@@ -7,17 +7,21 @@ This is an implementation of a Deep Convolutional [Generative Adverserial Networ
 
 ## Folders and Sripts
 - Folders
-    + ```/Images-Gifs```: Images and Gifs for Git-Hub
-    + ```/data```: For storing the training images and the pickle file for training
+    + ```/images-gifs```: Images and Gifs for displaying on Git-Hub
+    + ```/data```: For storing data
+        * ```/data/pickle```: Stores the pickle data [Necessary]
+        * ```/data```: Stores unprocessed raw images [Optional]
     + ```/docs```: Documentation
-    + ```/function```: Functions used for preprocessing, visualisation ...
+    + ```/functions```: Functions used for preprocessing, visualisation ...
     + ```/save```: For saving pictures which were produces during training & storing weights & plots of loss ...
+        * ```/save/figs``` stores all generated images
+        * ```/save/models``` stores all generated models
 
 - Scripts
     + ```dc_gan.py```: Main script
     + ```preprocessing_pickle.py```: Applies preprocessing to images stored in ```/data/unprocessed_images``` and saves a pickle containing them in ```/save/pickle```.
-    + ```celeba_input.py```: Loads pickle and supplies ```dc_gan.py``` with batches.
-    + ```auxiliary_functions.py```: Contains visualisation tools and argument handling
+    + ```celeba_input.py```: Loads pickle (per default from ```/data/pickle```) and supplies ```dc_gan.py``` with batches.
+    + ```auxiliary_functions.py```: Contains visualisation tools, argument handling and a function which returns the name of the most advance model in ```/figs/models```
     + ```gifMaker.py```: creates Gifs
 
 ## Installation and Prerequisites
@@ -26,7 +30,7 @@ Cloning the Repository via git:
 git clone https://github.com/D3vvy/iannwtf_DCGAN.git
 ```
 
-Make sure, you have the following modules installed:
+**Make sure, you have the following modules installed**:
 - [Tensorflow](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
 - Matplotlib: ```pip install matplotlib```
 - Numpy: ```pip install numpy```
@@ -35,7 +39,7 @@ Make sure, you have the following modules installed:
 - OpenCV2 ```pip install opencv``` or ```conda install opencv``` (optional: preprocessing)
 - [ImageIO](https://pypi.python.org/pypi/imageio) (optional: creating gifs)
 
-Dataset:
+**Dataset**:
 - In this Deep Convolutional Generative Adversarial Network we used the cropped and alligned version of the CelebA Datset, available [here](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
 - If you just want to to train using a pickle file, you can download a preprocessed version of the dataset here TODO.
 
@@ -47,11 +51,11 @@ In case you want to use your own images, store them in ```/data/unprocessed_imag
 ## Instructions: Training
 It is necessary to provide a pickle-file in  ```/data/pickle```. Either create it yourself or download it from the above link.
 
-To simply train the network, just execute the file and provide the argument ```-train``` when doing so.
+To simply train the network, just execute the file and provide the argument ```-train``` when doing so. At the end of any training process, the information plots will be stored in ```/save/figs```.
 ```
 python3 dc_gan.py -train
 ```
-By supplying an integer after ```-nbatch``` , you can change the number of batches used to train (by default **1000**).
+By supplying ```-nbatch``` and an integer after that, you can change the number of batches used to train (by default **2000**).
 ```
 python3 dc_gan.py -nbatch 5000
 ```
@@ -70,15 +74,16 @@ python3 dc_gan.py -train -vis
 ## Instructions: Testing
 All of the following will need a model to test on. Just provide one (or multiple) models in the ```/save/model``` folder with the original name (the one they were created with). By default the most advanced one will be taken.
 
-In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` flag to generate a ```n*n``` picture (by default **5x5**, between 1 and 8). The generated pictures will be saved in ```/my_imgs```.
+In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` flag to generate a ```n*n``` picture (by default **5x5**, has to be between 1 and 8). The generated pictures will be saved in ```/my_imgs```.
 ```
+python3 dc_gan.py -test
 python3 dc_gan.py -test 10
 ```
-If you want to see the results of a **z-interpolation**, provide the ```-z_int``` tag. You won't be needing to provide an integer, since only one will be generated. The image will be saved in ```/save/figs```.
+If you want to see the results of the **Z-Interpolation**, provide the ```-z_int``` tag. You won't be needing to provide an integer, since only one will be generated. The image will be saved in ```/save/figs```.
 ```
 python3 dc_gan.py -test -z_int
 ```
-Furthermore, if you are intrested in seeing the results of our custom **z-change**, provide the ```-z_change``` tag. As you can see in our documentary it enables you to iterate over one of the 100 paramter values. If you want to specify which parameter to change provide an integer between 1 and 100 as an additional argument. In case you do not a random values between 1 and 100 will be chosen. You won't be needing to provide an integer, since only one will be generated. The image will be saved in ```/save/figs```.
+Furthermore, if you are interested in seeing the results of the **Z-Paramter Change**, provide the ```-z_change``` tag (see Documentation for information). As you can see in our documentary it enables you to iterate over one of the 100 paramter values. If you want to specify which parameter to change provide an integer between 1 and 100 as an additional argument. In case you do not a random values between 1 and 100 will be chosen. You won't be needing to provide an integer, since only one will be generated. The image will be saved in ```/save/figs```.
 ```
 python3 dc_gan.py -test -z_change
 python3 dc_gan.py -test -z_change 42

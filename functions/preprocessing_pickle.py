@@ -23,6 +23,7 @@ Usage:
 '''
 
 def preprocessing(pic_folder_path=file_path+'/data/unprocessed_images', 
+	
 	pickle_path=file_path+'/data/pickle', pickle_name="celeba_pickle.dat"):
 	
 	print('[*] Preprocessing started. This may take a while...')

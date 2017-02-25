@@ -1,22 +1,38 @@
 import pickle
 import random
 import os
-import numpy as np  # just for now
+import numpy as np
 
 
+'''
+Note to Lukas:
+
+Wie in der Mail beschrieben, würde wir hier diese "old" if sache
+weg lassen, weil sie im normalen Preprocessing gemacht worden wäre
+'''
 old = True
+
+# get absolute path of this file
 file_path = ('/'.join(os.path.realpath(__file__).split("/")[:-2]))
 
-'''
-Function: Creates an Object, which is able to create Batches
- 
-'''
 
+#################### Get Pickle Data
 def get_data(filename):
-	with open(filename, "rb") as f:
-		data = pickle.load(f)
+	print('------>[*] Loading Pickle Data...')
+	try:
+		with open(filename, "rb") as f:
+			data = pickle.load(f)
+		print('------>[+] Pickle Data Loaded!')
+	except:
+		print('------>[-] Pickle Data Load failed!')
 	return data
 
+
+#################### CelebA Class
+'''
+Purpose: Creates an Object, which is able to supply batches
+ 
+'''
 class CelebA():
 
 	def __init__(self, filename= file_path + "/data/pickle/celeba_pickle.dat"):
@@ -57,8 +73,10 @@ class CelebA():
 			#delete those you took out from "current"
 			self.current = self.current[batch_size:]
 		
+		# temporary
 		if old:
 			for i in range(len(batch)):
 				batch[i] = np.expand_dims(batch[i],-1)
 				batch[i] = (batch[i]/255.0 - 0.5) * 2.0
+
 		return batch

@@ -1,12 +1,14 @@
 import os
 import imageio
 
-# Function: Creates Gif using Images
-#
-# Usage: Provide
-#	- (a path and) a name for the gif (with .gif as datatype)
-#	- a path to folder, containing the images
-#	- number of frames per second
+'''
+Function: Creates Gif using Images
+
+Usage: Provide
+	- (a path and) a name for the gif (with .gif as datatype)
+	- a path to folder, containing the images
+	- number of frames per second
+'''
 
 def createGif(gif_name='./name_me.gif', image_path='.', image_duration=0.2):
 	
