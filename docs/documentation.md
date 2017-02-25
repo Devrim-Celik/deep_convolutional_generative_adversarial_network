@@ -20,7 +20,11 @@ The reason for having these 2 models is to put them up against each other, i.e. 
 Imagine a criminal who is trying to counterfeit famous paintings to later sell them a museum in his town (**Generator**). The museums, on the other hand, have employed an art expert whose salary depends on deciding whether a painting is real or a fake (**Discriminator**. This is a *zero-sum game* setup, i.e. the better the criminal does, the less money the art expert gets; and the better the art expert does in distinguishing between real and fake potraits, the less money the criminal earn. By having this kind of competition, we can ensure both the criminal and the art expert will try their best. If the expert has found a solid way to discriminate, the criminal will change his style until they again pass at which point the expert will again try to improve him self.
 
 ###### Training
-As described above, the training process is supposed to resemble a *zero-sum game*. ?So the loss functions have to be written in that manner, i.e. "contradictory"? 
+As described above, the training process is supposed to resemble a *zero-sum game*. That means: *"The better **g**, the more **d** has to learn and vice versa".* 
+The loss function, with **g(z)** being the generated images and **x** being the real images, looks like this:
+Discriminator: 
+
+?So the loss functions have to be written in that manner, i.e. "contradictory"? 
 
 
 # add: they are neural networks
@@ -37,6 +41,7 @@ As described above, the training process is supposed to resemble a *zero-sum gam
     - theoretical basis
         + euqations...
 1,2 What do we try to do
+Applications of GAN 
 
 ??? Related Work and Simlar Approaches
 
@@ -49,7 +54,6 @@ As described above, the training process is supposed to resemble a *zero-sum gam
     - 
 
 10 Evaluation and Comparison
-
 
 
 # Task Description

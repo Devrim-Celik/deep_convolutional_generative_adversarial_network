@@ -1,21 +1,23 @@
+# ##################################################################
+# ############################ DC-GAN ##############################
+# ##################################################################
 
-# TODO ÜBERSCHIRFT; AUTOREN BLA BLA
-
-
-
+# @author: d3vvy
+# @date: 25.02.2017
 
 # ##################################################################
 # ##################### Imports and Setting ########################
 # ##################################################################
-
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import random 					
-#TODO: One of those two can be removed FLEM
 import os
 import os.path
+import sys
 
+from functions.auxiliary_functions import arg_parser
+from functions.auxiliary_functions import get_highest_model
 from functions.auxiliary_functions import merge_and_save
 from functions.celeba_input import CelebA
 
@@ -23,66 +25,123 @@ from functions.celeba_input import CelebA
 # ######## Training Parameters #######
 # ####################################
 Z_size = 100
-batch_size = 32
-n_batches = 5000
-restore_weights = True
+batch_size = 64
 
 # ####################################
 # ############ Directories ########### 
 # ####################################
 # Path, where to save sample-images
-sample_dir = './save/figs'
+sample_dir = '/'.join(os.path.realpath(__file__).split("/")[:-1])+'/save/figs'
 if not os.path.exists(sample_dir):
 	os.makedirs(sample_dir)
 
 # Path, where to save trained model
-model_dir = './save/models'
+model_dir = '/'.join(os.path.realpath(__file__).split("/")[:-1])+'/save/models'
 if not os.path.exists(model_dir):
 	os.makedirs(model_dir)
 
 # ####################################
-# ########### Print-Setting ##########
+# ######## Retrieve Arguments ########
+# ####################################
+
+arg_dict = arg_parser(sys.argv)
+
+if arg_dict['help']:
+	print('--------------------- Options ---------------------\n\n')
+	
+	print('-train:\t\t Training. Without arguments equal to "-train -vis".\n')
+	print('\t-nbatch x:\t\t Train "x" batches (x has to be an integer).')
+	print('\t-load:\t\t\t Load most most advanced model.')
+	print('\t-load x:\t\t Train model with number x (e.g. 3416).')
+	print('\t-vis:\t\t\t Turn on visualizations.\n\n')
+
+	print('-test:\t\t Testing. Return image sample.\n')
+	print('-text x: \t Return x*x samples in one image.')
+	print('\t-z_int:\t\t\t Enable Z-Interpolation. Img will be saved.')
+	print('\t-z_change:\t\t Do Z-Change with a random paramter.')
+	print('\t-z_change x:\t\t Do Z-Change with a paramter number x.')
+	print('\t-vis:\t\t\t Turn on visualizations.\n\n')
+
+	print('---------------------------------------------------\n\n')
+	sys.exit()
+
+# should we train?
+train = arg_dict["train"]
+
+# should we load weight?
+restore_weights = arg_dict["load"][0]
+	# which one should we load
+		# nr was provided
+if restore_weights:
+	if arg_dict["load"][1] != 0:
+		global_step = arg_dict["load"][1]
+			# nr wasn't provided
+	else:
+		#if he wants to load weight but doesnt provide a number
+		#get the one with the "highest number"
+		global_step = get_highest_model(model_dir)
+else:
+	global_step = 0
+
+# how many batches should we do
+if arg_dict["nbatch"][0] == False:
+	n_batches = 2000
+else:
+	n_batches = arg_dict["nbatch"][1]
+
+# visualisation turned on?
+save_fig = arg_dict["vis"]
+
+# should we do test/ z-interpolation/ z-change
+z_inter = arg_dict["z_int"]
+
+z_change = arg_dict["z_change"][0]
+if z_change:
+	z_param = arg_dict["z_change"][1]
+test = arg_dict["test"]
+if test:
+	# start from highest number model
+	test_load = get_highest_model(model_dir)
+
+# set test_batch_size (by defualt 1)
+test_batch_size = arg_dict["number"]
+
+# ####################################
+# ####### Print&Save-Settings ########
 # ####################################
 printFreq = np.round(2*1000/batch_size)
-sampleFreq = np.round(20*1000/batch_size)
-saveFreq = np.round(50*1000/batch_size)
-print_varnames = True
+sampleFreq = np.round(10*1000/batch_size)
+saveFreq = np.round(20*1000/batch_size)
+
 
 # ####################################
 # ### Creation of Sample-Supplier ####
 # ####################################
 sampleGen = CelebA()
 
-
 # ##################################################################
 # ##################### Auxiliary Functions ######################## #todo change???
 # ##################################################################
 
 # leaky rectified linear unit
-def lrelu(x, leak=0.2, name="lrelu"):
+def lrelu(X, leak=0.2, name="lrelu"):
 	with tf.variable_scope(name):
-		f1 = 0.5 * (1 + leak)
-		f2 = 0.5 * (1 - leak)
-		return f1 * x + f2 * abs(x)
+		foo1 = 0.5 * (1 + leak)
+		foo2 = 0.5 * (1 - leak)
+		return foo1 * X + foo2 * abs(X)
 
-# TODO
-def check_update(fake_acc, real_acc, thresh1, thresh2):
-	D_opt = True
-	G_opt = True
+# determine learning rate update given fake and real accuracy
+def check_LR(fake_acc, real_acc, D_rate, G_rate, initial_lr, thresh1=0.7, thresh2=0.5):
 	if fake_acc < thresh2 or real_acc < thresh2:
-		D_opt = True
-		G_opt = False
-	if ((fake_acc + real_acc) / 2) > thresh1:
-		D_opt = False
-		G_opt = True
-	return D_opt,G_opt 
+		D_rate += 0.00001
+		G_rate *= 0.8
+	elif fake_acc > thresh1 or real_acc > thresh1: 
+		D_rate *= 0.8
+		G_rate += 0.00001
 
-# ##################################################################
-# ################ Definition of Network Elements ##################
-# ##################################################################
-
-# Todo add comments
-
+	D_rate = max(min(0.00025, D_rate), 0.00015)
+	G_rate = max(min(0.00025, G_rate), 0.00015)
+	return np.array([D_rate, G_rate])
 
 # ####################################
 # #### Function for Dense_Layers #####
@@ -138,7 +197,7 @@ def trans2d_layer(layer_input, W_shape, output_shape, b_shape=[-2], strides=[1,1
 				iState = tf.nn.l2_normalize(iState, 0)
 			return activation(iState)
 
-#todo add comments
+#todo add comments flemming
 
 # ####################################
 # ######### Generator Setup ##########
@@ -149,37 +208,35 @@ def generator(Z, reuse=False):
 	state = trans2d_layer(layer_input=state, W_shape=[5,5,256,512], output_shape=[batch_size,8,8,256], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans1', namescope='generator')
 	state = trans2d_layer(layer_input=state, W_shape=[5,5,128,256], output_shape=[batch_size,16,16,128], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans2',namescope='generator')
 	# state = tf.nn.dropout(state,drop[1])
-	state = trans2d_layer(layer_input=state, W_shape=[5,5,32,128], output_shape=[batch_size,32,32,32], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans3',namescope='generator')
-	state = trans2d_layer(layer_input=state, W_shape=[5,5,16,32], output_shape=[batch_size,64,64,16], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans4',namescope='generator')
-	state = trans2d_layer(layer_input=state, W_shape=[5,5,1,16], b_shape=[0], output_shape=[batch_size,64,64,1], strides=[1,1,1,1], activation=tf.nn.tanh, batch_norm=False, reuse=reuse, varscope='g_trans5',namescope='generator')
+	state = trans2d_layer(layer_input=state, W_shape=[5,5,64,128], output_shape=[batch_size,32,32,64], strides=[1,2,2,1], batch_norm=True, reuse=reuse, varscope='g_trans3',namescope='generator')
+	state = trans2d_layer(layer_input=state, W_shape=[5,5,1,64], b_shape=[0], output_shape=[batch_size,64,64,1], strides=[1,2,2,1], activation=tf.nn.tanh, batch_norm=False, reuse=reuse, varscope='g_trans5',namescope='generator')
 	return state
 
 # ####################################
 # ####### Distinguisher Setup ########
 # ####################################
 def distinguisher(X, reuse=False):
-	state = conv2d_layer(layer_input=X, W_shape=[6,6,1,64], b_shape=[0], strides=[1,2,2,1], activation=lrelu, reuse=reuse, varscope='d_conv1', namescope='distinguisher') # ==> ?
-	state = conv2d_layer(layer_input=state, W_shape=[4,4,64,64], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv2', namescope='distinguisher') # ==> ?
-	state = tf.nn.dropout(state,drop[0])
-	state = conv2d_layer(layer_input=state, W_shape=[4,4,64,128], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv3', namescope='distinguisher') 
-	state = tf.nn.max_pool(state, ksize=[1,2,2,1], strides=[1,2,2,1], padding="SAME")
+	state = conv2d_layer(layer_input=X, W_shape=[5,5,1,128], b_shape=[0], strides=[1,2,2,1], activation=lrelu, reuse=reuse, varscope='d_conv1', namescope='distinguisher') # ==> ?
+	state = conv2d_layer(layer_input=state, W_shape=[5,5,128,128], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv2', namescope='distinguisher') # ==> ?
+	state = tf.nn.dropout(state,0.5)
+	state = conv2d_layer(layer_input=state, W_shape=[5,5,128,128], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv3', namescope='distinguisher') 
+	state = conv2d_layer(layer_input=state, W_shape=[5,5,128,128], strides=[1,2,2,1], activation=lrelu, batch_norm=False, reuse=reuse, varscope='d_conv4', namescope='distinguisher') 
 	state = tf.reshape(state, [batch_size,128*4*4])
-	state = tf.nn.dropout(state,drop[0])
+	state = tf.nn.dropout(state,0.5)
 	state = dense_layer(state, [128*4*4,1], activation=tf.nn.sigmoid, reuse=reuse, varscope='d_fc2', namescope='distinguisher')
 	return state
 
 # ##################################################################
 # ################ Definition of Data Flow Graph ###################
 # ##################################################################
-
-#todo add comm
+# todo add flem 
 tf.reset_default_graph()
 initializer = tf.truncated_normal_initializer(stddev=0.02)
 
 # # define placeholders for input
 Z = tf.placeholder(dtype=tf.float32, shape=[None,Z_size])
 X = tf.placeholder(dtype=tf.float32, shape=[None,64,64,1])
-drop = tf.placeholder(dtype=tf.float32,shape=[2])
+lr = tf.placeholder(dtype=tf.float32,shape=[2])
 
 # define instances of data flow
 Gz = generator(Z) # generates images from Z
@@ -189,7 +246,7 @@ Dg = distinguisher(Gz, reuse=True) # produces probabilities for generator images
 # ####################################
 # ########## Training Setup ##########
 # ####################################
-
+# todo flem
 D_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dx), labels=tf.ones(batch_size,1)) \
 						 + tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.zeros(batch_size,1)))
 G_lossfun = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.squeeze(Dg), labels=tf.ones(batch_size,1)))
@@ -204,8 +261,8 @@ D_vars = [var for var in train_vars if 'd_' in var.name]
 G_vars = [var for var in train_vars if 'g_' in var.name]
 
 # define optimizer
-D_optimizer = tf.train.AdamOptimizer(learning_rate=0.0002,beta1=0.5)
-G_optimizer = tf.train.AdamOptimizer(learning_rate=0.0002,beta1=0.5)
+D_optimizer = tf.train.AdamOptimizer(learning_rate=lr[0],beta1=0.5)
+G_optimizer = tf.train.AdamOptimizer(learning_rate=lr[1],beta1=0.5)
  
 # compute gradients
 D_gradients = D_optimizer.compute_gradients(D_lossfun,D_vars) #Only update the weights for the distinguisher network.
@@ -215,178 +272,229 @@ G_gradients = G_optimizer.compute_gradients(G_lossfun,G_vars) #Only update the w
 D_update = D_optimizer.apply_gradients(D_gradients)
 G_update = G_optimizer.apply_gradients(G_gradients)
 
+#todo flem
+init = tf.global_variables_initializer()
+saver = tf.train.Saver(max_to_keep=10, keep_checkpoint_every_n_hours=1.0, write_version=tf.train.SaverDef.V1)
 
 # ##################################################################
 # ##################### Training of Network ########################
 # ##################################################################
 
-if print_varnames:
-	print('\nVARIABLE NAMES:\n----------------------------------------------------\n')
-	print([v.name for v in tf.trainable_variables()])
+if train:
+	with tf.Session() as sess: 
 
-init = tf.global_variables_initializer()
-saver = tf.train.Saver(max_to_keep=10, keep_checkpoint_every_n_hours=1.0, write_version=tf.train.SaverDef.V1)
-with tf.Session() as sess:  
-	sess.run(init)
+		print('\n\n\n-------------------------------------------')
+		print('--------- [*] Training started... ---------')
+		print('-------------------------------------------\n\n\n')
 
-	print('')
-	print('TRAINING:')
-	print('-----------------------------------------------------------------------')
-	
-	if restore_weights:
-		if os.path.isfile(model_dir+'/model.ckpt'): # model name needs to be changed manually
-			saver.restore(sess, model_dir+'/model.ckpt')
-			print('')
-			print(' ==> model restored from file')
-	
-	G_loss_history = []
-	D_loss_history = []
-
-	D_fake_history = []
-	D_real_history = []
-
-	D_update_history = []
-	G_update_history = []
-	
-	D_optimize = True
-	G_optimize = True
-
-	# first dis dropout, second gen dropout
-	dropout = np.array([0.5,0.5])
-
-	z_sample = np.random.uniform(-1.0,1.0, size=[batch_size,Z_size]).astype(np.float32) # generate a z batch
-
-	dis_up = 0
-	gen_up = 0
-
-	for i in range(n_batches):
-
-		tf.reset_default_graph()
-		tf.set_random_seed(1)
-
-		# create inputs
-		z_in = np.random.uniform(-1.0, 1.0, size=[batch_size,Z_size]).astype(np.float32)
-		x_in = sampleGen.get_batch(batch_size) # Devrim Changed this
-
-		# update distinguisher and generator
-		if D_optimize:
-			dis_up = dis_up + 1
-			_,D_loss = sess.run([D_update,D_lossfun],feed_dict={Z: z_in, X: x_in, drop: dropout})
+		sess.run(init)
+		if restore_weights:
+			if os.path.isfile(model_dir+'/model.ckpt-' + str(global_step)): # model name needs to be changed manually
+				saver.restore(sess, model_dir+'/model.ckpt-' + str(global_step))
+				print('\n==> Model loaded from /model.ckpt-' + str(global_step) + '\n')
 		
-		D_fake,D_real = sess.run([Dg_perf,Dx_perf],feed_dict={Z: z_in, X: x_in, drop: np.array([1.0,1.0])})
-		D_optimize, G_optimize = check_update(D_fake,D_real,0.8,0.5)
+		# For later plotting
+		G_loss_history = []
+		D_loss_history = []
 
-		if G_optimize:
-			gen_up = gen_up + 1
-			_,G_loss = sess.run([G_update,G_lossfun],feed_dict={Z: z_in, drop: dropout})
+		D_fake_history = []
+		D_real_history = []
+
+		D_lr_history = []
+		G_lr_history = []
+
+		# first discriminator learningrate, second generative learningrate
+		init_lr = np.array([0.0002,0.0002])
+		learn_rates = init_lr
+
+		# generate z_sample for progress visualization (does not change during training)
+		np.random.seed(1)
+		z_sample = np.random.uniform(-1.0,1.0, size=[batch_size,Z_size]).astype(np.float32) 
+
+		for i in range(n_batches):
+			# create inputs
 			z_in = np.random.uniform(-1.0, 1.0, size=[batch_size,Z_size]).astype(np.float32)
-			_,G_loss = sess.run([G_update,G_lossfun],feed_dict={Z: z_in, drop: dropout})
+			x_in = sampleGen.get_batch(batch_size)
 
-		# print progress after n=printFreq batches
-		if (i+1)%printFreq == 0 or (i+1) == n_batches:
-			print('batch '+str(i+1)+'/'+str(n_batches))
-			print('   gen loss: ' + str(G_loss) + '\n   dis loss: ' + str(D_loss))
-			print('   dis acc fake: ' + str(D_fake) + '\n   dis acc real: ' + str(D_real))
-			print("dis updates: %.1f" % ((dis_up/(printFreq))*100))
-			print("gen updates: %.1f" % ((gen_up/(printFreq))*100))
+			# update distinguisher 
+			_,D_loss = sess.run([D_update,D_lossfun],feed_dict={Z: z_in, X: x_in, lr: learn_rates})
 
-			G_loss_history.append(G_loss)
-			D_loss_history.append(D_loss)
+			# update generator
+			_,G_loss = sess.run([G_update,G_lossfun],feed_dict={Z: z_in, lr: learn_rates})
+			z_in = np.random.uniform(-1.0, 1.0, size=[batch_size,Z_size]).astype(np.float32)
+			_,G_loss = sess.run([G_update,G_lossfun],feed_dict={Z: z_in, lr: learn_rates})
 
-			D_fake_history.append(D_fake)
-			D_real_history.append(D_real)
+			# update learning rates given distinguisher performance
+			D_fake,D_real = sess.run([Dg_perf,Dx_perf],feed_dict={Z: z_in, X: x_in})
+			learn_rates = check_LR(D_fake,D_real,learn_rates[0],learn_rates[1],init_lr)
 
-			D_update_history.append((dis_up/(printFreq))*100)
-			G_update_history.append((gen_up/(printFreq))*100)
+			# print progress after n=printFreq batches
+			if (i+1)%printFreq == 0 or (i+1) == n_batches:
+				print('--------Stats for Batch: ' + str(i+1) + '/' + str(n_batches) + ' --------')
+				print('\tGenerator Loss:\t\t' + str(G_loss))
+				print('\tDiscriminator Loss:\t' + str(D_loss))
+				print('\tGenerator Learning Rate:\t%f' % (learn_rates[1]))
+				print('\tDiscriminator Learning Rate:\t%f' % (learn_rates[0]))
+				print('\tDiscriminator - Percentage of True Positives:\t' + str(D_real))
+				print('\tDiscriminator - Percentage of False Negatives:\t' + str(D_fake) + '\n')
 
-			dis_up = 0
-			gen_up = 0
 
-		# save samples documenting progress after n=sampleFreq batches
-		if (i+1)%sampleFreq == 0 or (i+1) == n_batches:
-			# z_sample = np.random.uniform(-1.0,1.0, size=[batch_size,Z_size]).astype(np.float32) # generate another z batch
-			Gz_sample = sess.run(Gz, feed_dict={Z: z_sample, drop: np.array([1.0,1.0])}) # use new z to get sample images from generator
-			if i==0:
-				print(Gz_sample.shape)
-			merge_and_save(np.reshape(Gz_sample[0:36],[36,64,64]),[6,6],sample_dir+'/fig'+str(i)+'.png')
+				G_loss_history.append(G_loss)
+				D_loss_history.append(D_loss)
 
-		# save model weights after n=saveFreq batches
-		if (i+1)%saveFreq == 0 or (i+1) == n_batches:
-			saver.save(sess,model_dir+'/model.ckpt', global_step=i)
-			print(' ==> model saved (b'+str(i+1)+')')
+				D_fake_history.append(D_fake)
+				D_real_history.append(D_real)
 
-	print('')
+				D_lr_history.append(learn_rates[0])
+				G_lr_history.append(learn_rates[1])
+
+			# save samples documenting progress after n=sampleFreq batches
+			if save_fig and ((i+1)%sampleFreq == 0 or (i+1) == n_batches):
+				# use z_sample to get sample images from generator
+				Gz_sample = sess.run(Gz, feed_dict={Z: z_sample}) 
+				merge_and_save(np.reshape(Gz_sample[0:25],[25,64,64]),[5,5],sample_dir+'/fig'+str(i+global_step)+'.png')
+
+			# save model weights after n=saveFreq batches
+			if (i+1)%saveFreq == 0 or (i+1) == n_batches:
+				saver.save(sess,model_dir+'/model.ckpt', global_step=global_step+i)
+				print(' ==> Model saved with number: '+str(global_step+i))
+
+
+	print('\n\n\n-------------------------------------------')
+	print('---------- [+] Training finished! ---------')
+	print('-------------------------------------------\n\n\n')
+
+
+
+
+	# ##################################################################
+	# ######################## Training Plots ##########################
+	# ##################################################################
+
+
+	plt.figure()
+	plt.subplot(311)
+	plt.title('Network Losses')
+	plt.xlabel('training progress')
+	plt.plot(np.array(G_loss_history),label="gen loss")
+	plt.plot(np.array(D_loss_history),label="dis loss")
+	plt.legend()
+	plt.subplot(312)
+	plt.title('Discriminator Accuracy')
+	plt.xlabel('training progress')
+	plt.ylabel('percentage')
+	plt.plot(np.array(D_fake_history),label="fake acc")
+	plt.plot(np.array(D_real_history),label="real acc")
+	plt.legend()
+	plt.subplot(313)
+	plt.title('Network Learning Rates')
+	plt.xlabel('training progress')
+	plt.plot(np.array(D_lr_history),label="dis lr")
+	plt.plot(np.array(G_lr_history),label="gen lr")
+	plt.legend()
+	plt.tight_layout()
+
+	if not os.path.exists(sample_dir):
+		os.makedirs(sample_dir)
+	plt.savefig(sample_dir+'/0_stats.png')
+
 
 # ##################################################################
-# ######################## Training Plots ##########################
+# ###################### Testing of Network ########################
 # ##################################################################
 
-plt.figure()
-plt.subplot(311)
-plt.plot(np.array(G_loss_history),label="gen loss")
-plt.plot(np.array(D_loss_history),label="dis loss")
-plt.legend()
-plt.subplot(312)
-plt.plot(np.array(D_fake_history),label="dis fake acc")
-plt.plot(np.array(D_real_history),label="dis real acc")
-plt.legend()
-plt.subplot(313)
-plt.plot(np.array(D_update_history),label="% dis update")
-plt.plot(np.array(G_update_history),label="% gen update")
-plt.legend()
-if not os.path.exists(sample_dir):
-	os.makedirs(sample_dir)
-plt.savefig(sample_dir+'/0_stats.png')
+if test:
 
-# # ########################
-# # ### IMAGE GENERATION ###
-# # ########################
+	with tf.Session() as sess:
 
-# init = tf.global_variables_initializer()
-# saver = tf.train.Saver()
-# with tf.Session() as sess:  
-# 	sess.run(init)
+		print('\n\n\n-------------------------------------------')
+		print('---------- [*] Testing started... ---------')
+		print('-------------------------------------------\n\n\n')
 
-# 	print('')
-# 	print('IMAGE GENERATION:')
-# 	print('-----------------------------------------------------------------------')
+		sess.run(init)
 
-# 	# restore latest weights
-# 	ckpt = tf.train.get_checkpoint_state(model_dir)
-# 	saver.restore(sess,ckpt.model_checkpoint_path)
+		# restore latest weights
+		# todo: lastest weight function
+		saver.restore(sess, model_dir+'/model.ckpt-'+ str(test_load))
+		print('\n==> Model loaded from /model.ckpt-' + str(test_load) + '\n')
+		if z_change:
+			print('-------- [*] Z-Parameter Change in progress... --------')
+			n_imgs = 4
+			n_inter = 12
+			inter_imgs = []
 
-# 	# generate one batch of samples
-# 	z_sample = np.random.uniform(-1.0,1.0, size=[batch_size,Z_size]).astype(np.float32) # generate another z batch
-# 	Gz_sample = sess.run(Gz, feed_dict={Z: z_sample}) # use new z to get sample images from generator
-# 	if not os.path.exists(sample_dir):
-# 		os.makedirs(sample_dir)
-# 	save_images(np.reshape(Gz_sample[0:36],[36,32,32]),[6,6],sample_dir+'/fig'+str(i)+'.png')
+			if z_param == -1:
+				z_param = random.randint(0,99)
+
+			for i in range(n_imgs):
+				z_basis = np.random.uniform(-1.0,1.0, size=[1,Z_size]).astype(np.float32)
+				sample = np.squeeze(np.array(batch_size*[z_basis]))
+				for j in range(batch_size):
+					sample[j][z_param] = -0.05 + j * (1/batch_size)
+
+				Gz_sample = np.squeeze(sess.run(Gz, feed_dict={Z: sample}))
+				inter_imgs.extend(Gz_sample[::int(batch_size/n_inter)])
+
+			if not os.path.exists(sample_dir):
+				os.makedirs(sample_dir)
+			filename = sample_dir+'/Z-Change.png'
+
+			merge_and_save(np.reshape(inter_imgs[0:n_imgs*n_inter],[n_imgs*n_inter,64,64]),[n_imgs,n_inter],filename)
 			
-# 	print('done')
+			print('Saved to: ' + filename)
+			print('-------- [+] Z-Parameter Change in finished! --------')
 
-# print('')
+		# Z-Interpolation
+		if z_inter:
+			print('-------- [*] Z-Interpolation in progress... --------')
 
-# ############
-# ### INFO ###
-# ############
+			# generate a 2 z-vectors
+			z_value1 = np.random.uniform(-1.0,1.0, size=[1,Z_size]).astype(np.float32)
+			z_value2 = np.random.uniform(-1.0,1.0, size=[1,Z_size]).astype(np.float32)
+			z_ite = z_value1
+			
+			# create batch, first entry = first z-vec, last entry = seconz z-vec
+			z_vec = np.zeros([batch_size,Z_size])
+			z_vec[0] = z_value1
+			z_vec[batch_size-1] = z_value2
 
-# output layer size for transposed convolution:
-# a := extra padding (for transposed conv), a = (i+2p-k)%s
-# o := output size (non-transposed), o = ceil((i+2p-k+1)/s) [confirm?]
-# o':= output size (transposed), o'=i, o'= s(i'-1)+k-2p+a
-# i := input size (non-transposed), user-defined
-# i':= input size (transposed), i'=o
-# k := kernel size (non-transposed), user-defined
-# k':= kernel size (transposed), k'=k
-# s := stride (non-transposed)
-# s':= stride (transposed), 's'=1/s'
-# p := padding (in pixels, non-transposed), user-defined
-# p':= padding (transposed), p'=k-p-1
-# half (same) padding => p = floor(k/2)
+			# calculate increment
+			increment = (z_value2-z_value1)/(batch_size-1)
 
-# check weights
-# if i == 1:
-# 	weights7, biases7 = session.run(['layer7/weights:0', 'layer7/biases:0'])
-# 	weights = np.squeeze(weights7)
-# 	print(weights.shape)
-# 	print(weights[:,:,5,8])
+			# apply increment and zave intepolating z-vectors
+			for counter in range(1,batch_size-1):
+				z_ite += increment
+				z_vec[counter] = z_ite
+
+			# generate picture
+			sample = np.squeeze(np.array([z_vec]))
+			Gz_sample = np.squeeze(sess.run(Gz, feed_dict={Z: sample}))
+
+			# save
+			if not os.path.exists(sample_dir):
+				os.makedirs(sample_dir)
+			filename = sample_dir+'/Z-interpolation.png'
+
+			merge_and_save(np.reshape(Gz_sample[0:batch_size],[batch_size,64,64]),[int(np.sqrt(batch_size)),int(np.sqrt(batch_size))],filename)
+			
+			print('Saved to: ' + filename)
+			print('-------- [+] Z-Interpolation finished! --------')
+		
+		if not (z_inter or z_change):
+			print('\n---------- [*] Image Generation in progress... ----------')
+			# generate batch of z-vectors and feed through the generator
+			z_sample = np.random.uniform(-1.0,1.0, size=[batch_size,Z_size]).astype(np.float32)
+			Gz_sample = sess.run(Gz, feed_dict={Z: z_sample})
+			
+			#save it
+			if not os.path.exists(sample_dir):
+				os.makedirs(sample_dir)
+			filename = sample_dir+'/'+str(test_batch_size)+'x'+str(test_batch_size)+'_sample.png'
+			merge_and_save(np.reshape(Gz_sample[0:test_batch_size**2],[test_batch_size**2,64,64]),[test_batch_size,test_batch_size],filename)
+			
+			print('Saved to: ' + filename)
+			print('---------- [*] Image Generation finished! ----------:\n')
+
+	print('\n\n\n-------------------------------------------')
+	print('---------- [+] Testing finished! ----------')
+	print('-------------------------------------------\n\n\n')
