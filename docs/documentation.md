@@ -62,17 +62,24 @@ The game between discriminator and generator was hard to balance. We were not ab
 ## Evaluation
 
 ### Z-Paramter Change
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-Change.png "Z_Change1")
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-Change.png "Z_Change2")
 [ENTER PICTURE HERE] CHANGEX Supply 2 different
 One question which intrigued us while building the Network was how the different paramters of the Z-vector influences the resulting images. To get some insight into it, we created a Z-vector and iterated over different values for only one of its 100 paramters while keeping the other 99 paramters. At the end we have 12 of those images (ofcause it is possible to change in this code). In the image above you can see in total 8 of those images (Iteration is done in the rows while columns are different Z-vectors).
-What we can see here: ChangeX
+What we can see here: ChangeX EVALUATE
 
 ### Z-Interpolation
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-Interpolations.png "Z_Interpolation")
 [Enter picture here] MAYBE AS AGIf additionally CHANGEX
 The idea behinds Z-interpolation (CHANGEX: provide URL for papaerß) is quite close to the one described above. CHANGEX
 Shows the Face Area in Coordinate System...
+EVALUATE
+
+
+
 
 ### Look at change of pictures blalbal
-
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_stats.png "Stats")
 1. Random Noise -> Discriminator Learns
 2. Than Generator Learn
 3. Equilibirum and mutual change
