@@ -64,9 +64,11 @@ The game between discriminator and generator was hard to balance. We were not ab
 ### Z-Paramter Change
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-Change1.png "Z_Change1")
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-Change2.png "Z_Change2")
-[ENTER PICTURE HERE] CHANGEX Supply 2 different
-One question which intrigued us while building the Network was how the different paramters of the Z-vector influences the resulting images. To get some insight into it, we created a Z-vector and iterated over different values for only one of its 100 paramters while keeping the other 99 paramters. At the end we have 12 of those images (ofcause it is possible to change in this code). In the image above you can see in total 8 of those images (Iteration is done in the rows while columns are different Z-vectors).
-What we can see here: ChangeX EVALUATE
+One question which intrigued us while building the Network was how the different paramters of the Z-vector influence the resulting images. To get some insight into it, we created a Z-vector and iterated over different values for only one of its 100 paramters while keeping the other 99 paramters. At the end we have 12 of those images (of cause it is possible to change in this code). In the visualisations above you can see in total 8/12 of those images (oteration is done in the rows while columns are indicating different values for one parameter).
+What we can see here is firstly, that the value of every parameter influences the background if it is big enough, which makes sense. 
+In the first row of the first sample image it is also recognizable that this paramter influences the gender of the generated face, the higher this value gets (more to the right) the more masculin the face gets (although the hair still is feminine).
+In the fourth row of the first sample we can see that this paramter also influence the gesture, since the person on the left is clearly laughing (teeth visible) while the highest value (most right picture) is just smiling.
+
 
 ### Z-Interpolation
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-interpolation.png "Z_Interpolation")
