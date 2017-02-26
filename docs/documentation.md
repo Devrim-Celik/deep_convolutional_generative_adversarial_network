@@ -1,5 +1,7 @@
 # Deep Convolutional Generative Adversarial Model
 
+## Task Description
+
 ## Introduction: What is a DCGAN
 Generative Adversarial Models are fairly new branch of unsupervised learning. Their goal is to generate samples (images, text, music, videos) which resembles their trainings-set. The remarkable thing is: It does **not reproduce** them; i.e. it generates images which were never there before.
 
@@ -19,30 +21,21 @@ The reason for having these 2 models is to put them up against each other, i.e. 
 Imagine a criminal (**Generator**) who is trying to counterfeit famous paintings to later sell them to a museum in his town. The museum on the other hand, has employed an famous art expert (**Discriminator**) whose salary depends on deciding whether a painting is real or a fake. This is a *zero-sum game* setup, i.e. the better the criminal does, the less money the art expert gets; and the better the art expert does in distinguishing between real and fake potraits, the less money the criminal earn. By having this kind of competition, we can ensure both the criminal and the art expert will try their hardest. Even if the expert has found a solid way to discriminate fake and genuine pictures, the criminal will change his style until they again pass, at which point the expert will again try to improve himself and so on ...
 The only real difference to the real training process is that both Discriminator and Generator are untrained at the start.
 
-###### Theoretical Basis of the Training
-HIER ALLGEMEINT HALTEN; NICHT UNSERS BESCHREIBEN
-As described above, the training process is supposed to resemble a *zero-sum game*. ?So the loss functions have to be written in that manner, i.e. "contradictory"?
-
-
 # add: they are neural networks
 # add: we train them in alternating manner
 # add. loss functions
 
+
+
+## Preprocessing
+
 #### Basics 3: What is a Deep Convolutional Generative Adversarial Model Model
 
 
+#### Theoretical Basis of the Training
+HIER ALLGEMEINT HALTEN; NICHT UNSERS BESCHREIBEN
+As described above, the training process is supposed to resemble a *zero-sum game*. ?So the loss functions have to be written in that manner, i.e. "contradictory"?
 
-
-1. Explain: What is a GAN
-    - concept (using an Analogy)
-    - theoretical basis
-        + equations...
-1,2 What do we try to do
-
-
-??? Related Work and Similar Approaches
-
-1,4 Preprocessing
 
 ## Network Structure and Design Choices
 Our network architecture is a scaled down version inspired by [Radford et al. (2015)](https://arxiv.org/abs/1511.06434). We do not have such a powerful architecture since our data has lower dimensionality (64x64, grayscale not rgb). Additionally, CHANGEX: Training GAN is really hard since they are XXX.
@@ -55,8 +48,7 @@ The two learning rates are adjusted given the discriminator's accuracy on the fa
 The key to success in training a DCGAN is tuning the interplay between generator and discriminator, because one of them gets "ahead". If the discriminator is too powerful, it will classify all the generators image as fake. In the opposite case, the discriminator is fooled every time and hence classifies everything as true. For the generator both cases result in the same situation: it is left with no useful feedback. Both architecture and learning parameters have to be tuned to achieve good results.
 The game between discriminator and generator was hard to balance. We were not able to fully eliminate the chance of the network getting "stuck". Our first approach to avoid oscillations was to [leave either the discriminator-update or the generator-update out](http://torch.ch/blog/2015/11/13/gan.html) for one training batch if the accuracies behaved as described above. The interval needs very precise tuning: setting the lower threshold too low results in the discriminator failing and setting the higher threshold too high makes it too powerful. During training, the network eventually "recovers", but a lot of mini-batches are wasted. To still be able to use all batches for both components of our GAN, we instead decided to increase/decrease the learning rate to this update schedule. Limiting the learning rate within a range was required, again to avoid oscillations. The procedure yielded more stable and consistent results and visually clear transitions between sample images (lower learning rate at times).
 
-10 Evaluation and Comparison
-
+# Dropout
 
 
 ## Evaluation
@@ -79,13 +71,17 @@ In the fourth row of the first sample we can see that this paramter also influen
 
 The idea for Z-interpolation was provided by [Generating Faces with Deconvolution Networks](https://zo7.github.io/blog/2016/09/25/generating-faces.html). What we do is to take two random Z-vectors and over the course, of a total of 64 images, interpolate between them. The pictures and the give above are exactly those 64 vectors, after the Generator mapped them onto faces.
 
-Why do we do this and how does it help use evaluate our model: A good model maps the given Z-Vectors into a space (in our case in a 64<sup>2</sup>dimensional), lets call it "face-space". A bad model may just try to reproduce the images and not generate new ones. By taking little steps, we can check that the transitions are smooth and thus, a good "face-space" was found.
+Why do we do this and how does it help use evaluate our model: A good model maps the given Z-Vectors into a space (in our case in a 64<sup>2</sup> dimensional), lets call it "face-space". A bad model may just try to reproduce the images and not generate new ones. By taking little steps, we can check that the transitions are smooth and thus, a good "face-space" was found.
 
 In terms of **evaluation** we can say with a clear conscience that our model does a good job. This is due to the fact that the interpolating values from the one image (top-left of the left image) to another one (bottom-right of the left image) are faces them self. This shows that the mapping into a "face-space" was successful and images are genuinely generated and not duplicated.
 
+### Evaluation
+# a lot of womens --> speculate
+# training process is hard
+# sometimes screws up
+#
 
-
-### Look at change of pictures blalbal
+#### Look at change of pictures blalbal
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_stats.png "Stats")
 1. Random Noise -> Discriminator Learns
 2. Than Generator Learn
