@@ -415,7 +415,7 @@ if test:
 
 			if not os.path.exists(sample_dir):
 				os.makedirs(sample_dir)
-			filename = sample_dir+'/Z-Change_param'+str(z_param)+'.png'
+			filename = sample_dir+'/Z-Change_param'+str(z_param+1)+'.png'
 
 			merge_and_save(np.reshape(inter_imgs[0:n_imgs*n_inter],[n_imgs*n_inter,64,64]),[n_imgs,n_inter],filename)
 			
