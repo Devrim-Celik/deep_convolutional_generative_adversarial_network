@@ -79,7 +79,7 @@ In the fourth row of the first sample we can see that this paramter also influen
 
 The idea for Z-interpolation was provided by [Generating Faces with Deconvolution Networks](https://zo7.github.io/blog/2016/09/25/generating-faces.html). What we do is to take two random Z-vectors and over the course, of a total of 64 images, interpolate between them. The pictures and the give above are exactly those 64 vectors, after the Generator mapped them onto faces.
 
-Why do we do this and how does it help use evaluate our model: A good model maps the given Z-Vectors into a space (in our case in a 64^2 dimensional), lets call it "face-space". A bad model may just try to reproduce the images and not generate new ones. By taking little steps, we can check that the transitions are smooth and thus, a good "face-space" was found.
+Why do we do this and how does it help use evaluate our model: A good model maps the given Z-Vectors into a space (in our case in a 64<sup>2</sup>dimensional), lets call it "face-space". A bad model may just try to reproduce the images and not generate new ones. By taking little steps, we can check that the transitions are smooth and thus, a good "face-space" was found.
 
 In terms of **evaluation** we can say with a clear conscience that our model does a good job. This is due to the fact that the interpolating values from the one image (top-left of the left image) to another one (bottom-right of the left image) are faces them self. This shows that the mapping into a "face-space" was successful and images are genuinely generated and not duplicated.
 
