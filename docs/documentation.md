@@ -70,6 +70,8 @@ What we can see here: ChangeX EVALUATE
 
 ### Z-Interpolation
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-interpolation.png "Z_Interpolation")
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_Z-interpolation-gif.gif "Z_Interpolation")
+
 [Enter picture here] MAYBE AS AGIf additionally CHANGEX
 The idea behinds Z-interpolation (CHANGEX: provide URL for papaerß) is quite close to the one described above. CHANGEX
 Shows the Face Area in Coordinate System...
