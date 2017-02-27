@@ -74,7 +74,7 @@ The discriminator **d** mirrors this architecture by convoluting its input four 
 ## Training Procedure
 During training, we update the discriminator with mini-batches consisting of 64 randomly picked real images and 64 **Z** vectors. The generator is updated using the same z_vector batch as well as an additional 64 **Z** vectors. We use the Adam optimizer with initial learning rates of 0.0002 for the discriminator and 0.0002 for the generator.
 
-![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_interval.gif "Interval-Illustration")
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_interval.png "Interval-Illustration")
 
 The two learning rates are adjusted given the discriminator's accuracy on the fakes  as well as the real data. We set two thresholds to determine the learning rate adjustment: If either of the discriminator's accuracies is below the first (lower) threshold the discriminator's learning rate is increased slightly and the generator's decreased since the discriminator's classification is considered less informative. If the discriminator's accuracies reach above the second (higher) threshold, we do the opposite, since the discriminator should not get too powerful and the generator gets very informative feedback. In between the thresholds we increase both learning rates, because we can. This enables us to control the training process which again yields better results.
 
