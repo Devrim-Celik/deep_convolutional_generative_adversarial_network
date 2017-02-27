@@ -1,12 +1,9 @@
 # Deep Convolutional Generative Adversarial Network - Documentation
 
 ## Task Description
-todo
-- while working on homework --> mnist created
-- asked our self how complicate pictues we can create
-- used celeba becaused we wanted a challening dataset--> we have high standard for a face
-- also intrested how z is mapped onto images ('face-space') and how images differ by chaning single paramters in z-vectors
-- hope this project provides an simple, but still fairly GAN, which someone can learn from
+One of the tasks we did at our university required us to build a simple DCGAN, trained on [NMIST](http://yann.lecun.com/exdb/mnist/). Although impressed, we asked ourselfes how far we can come with a more challenging dataset. At the end we went for the [CelebA-Dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), since we, as humans, have a high standards for faces.
+Next to that we also were interested how the **Z** vector is influencing the resulting image. The idea that the Generator is supposed to map this vector into a "space of faces" was quite astonishing and so we decided also to implement evaluation tools such as a **Z-interpolation**.
+Finally we hope that this repository served as guidance for students, such as we are, to better understead this fascinating model.
 
 ## Introduction: What is a DCGAN
 Generative Adversarial Models are fairly new branch of unsupervised learning. Their goal is to generate samples (images, text, music, videos) which resembles their trainings-set. The remarkable thing is: It does **not reproduce** them; i.e. it generates images which were never there before.
@@ -76,7 +73,7 @@ During training, we update the discriminator with mini-batches consisting of 64 
 
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_interval.png "Interval-Illustration")
 
-The two learning rates are adjusted given the discriminator's accuracy on the fakes  as well as the real data. We set two thresholds to determine the learning rate adjustment: If either of the discriminator's accuracies is below the first (lower) threshold the discriminator's learning rate is increased slightly and the generator's decreased since the discriminator's classification is considered less informative. If the discriminator's accuracies reach above the second (higher) threshold, we do the opposite, since the discriminator should not get too powerful and the generator gets very informative feedback. In between the thresholds we increase both learning rates, because we can. This enables us to control the training process which again yields better results.
+The two learning rates are adjusted given the discriminator's accuracy on the fakes  as well as the real data. We set two thresholds to determine the learning rate adjustment: If either of the discriminator's accuracies is below the first (lower) threshold the discriminator's learning rate is increased slightly and the generator's decreased since the discriminator's classification is considered less informative. If the discriminator's accuracies reach above the second (higher) threshold, we do the opposite, since the discriminator should not get too powerful and the generator gets very informative feedback. In between the thresholds we increase both learning rates. This enables us to control the training process which again yields better results.
 
 The key to success in training a DCGAN is tuning the interplay between generator and discriminator, because one of them gets "ahead". If the discriminator is too powerful, it will classify all the generators image as fake. In the opposite case, the discriminator is fooled every time and hence classifies everything as true. For the generator both cases result in the same situation: *It is left with no useful feedback*. Both architecture and learning parameters have to be tuned to achieve good results.
 
