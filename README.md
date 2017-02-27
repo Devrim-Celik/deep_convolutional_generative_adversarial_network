@@ -33,7 +33,7 @@ git clone https://github.com/D3vvy/iannwtf_DCGAN.git
 - [Tensorflow](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
 - Matplotlib: ```pip install matplotlib```
 - Numpy: ```pip install numpy```
-- Scipy: TODO
+- [Scipy](https://www.scipy.org/scipylib/download.html)
 - PIL ```pip install PIL``` (optional: preprocessing and visualisation)
 - OpenCV2 ```pip install opencv``` or ```conda install opencv``` (optional: preprocessing)
 - [ImageIO](https://pypi.python.org/pypi/imageio) (optional: creating gifs)
