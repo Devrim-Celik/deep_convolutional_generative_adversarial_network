@@ -40,7 +40,7 @@ Advantages: todo
 
 ## Preprocessing
 It is important to mention that our used dataset is already preprocessed, in sense that we used a cropped and alligned version of it.
-The first thing we did is to crop it into a quadratic form. Next off, we resize it into 64x64 and greyscale it; this is done due to the fact that we have limited computational power. We also map the grey values of the images from *0 to 255* to *-1 to 1*, due to the fact that the input unit (**Z** vector) is taken from a uniform distribution between these values. Finally, we add a third "empty dimension" for compability reasons.
+The first thing we did is to crop it into a quadratic form. Next off, we resize it into 64x64 and greyscale it; this is done due to the fact that we have limited computational power. We also map the grey values of the images from **0 - 255** to **-1 - 1**, due to the fact that the input unit (**Z** vector) is taken from a uniform distribution between these values. Finally, we add a third "empty dimension" for compability reasons.
 
 The limitation in terms of resizing and greyscale is an important step since, even with it, we have 202000\*64<sup>2</sup>\*256 (**~200 billion**) values to work with.
 
