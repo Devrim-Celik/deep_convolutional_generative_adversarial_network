@@ -67,6 +67,10 @@ The generator **g** first expands the **z** vector of size **100** to a vector o
 The discriminator **d** mirrors this architecture by convoluting its input four times, reshaping to a 1d-layer and mapping to a single output unit. We are using strides of **2** and **5x5** kernels again. To regulate the capacity with respect to the generator's training progress, we apply dropout after the second and fourth convolution. No batch-normalization is applied in the discriminator.
 
 ##### Dropout
+The term "Dropout" describes a regularization technique used to avoid overfitting in neural networks.
+The basic idea is that we leave out certain units ('drop') for every training iteration. The chance of which a unit is left out is random; in the simplest case we have a static probability **p** which describes the chance that a unit is dropped.
+
+By "thinning" a network out like this we have an interesting effect: Every training iteration we have a different model we train with. This prevents weights from converging to identical positions. Note that the backpropagation, on the other hand, is done with all units "turned on".
 
 ## Training Procedure
 During training, we update the discriminator with mini-batches consisting of 64 randomly picked real images and 64 **Z** vectors. The generator is updated using the same z_vector batch as well as an additional 64 **Z** vectors. We use the Adam optimizer with initial learning rates of 0.0002 for the discriminator and 0.0002 for the generator.
@@ -104,25 +108,28 @@ Why do we do this and how does it help use evaluate our model: A good model maps
 In terms of **evaluation** we can say with a clear conscience that our model does a good job. This is due to the fact that the interpolating values from the one image (top-left of the left image) to another one (bottom-right of the left image) are faces themself and the transitions are really smooth. This shows that the mapping into a "face-space" was successful and images are genuinely generated and not duplicated.
 
 ### Evaluation
-# a lot of womens --> speculate
-# training process is hard
-# sometimes screws up
-#
 
-#### Look at change of pictures blalbal
+Intrestengly, most of the faces (~75%), have long hair while the faces are quite neutral. Although we have some hypothesis to why this is the case (One of them being the fact, that long hair covers more area and thus also covers more background.  The background was quite versatile on the original images, thus "eliminating it" was beneficial for the learning process of the GAN.), the most probable reason seems to be a uneven distribution of men and women in the dataset.
+
+The training process itself was quite intresting when considering which features of a human face the network learned first:
+1. **Head Shape**: In the early iteration (up until 300 batches) the network tries to fit the the head form. Most of them result in having a "bright" face with a dark background. As you can see in the Demonstration on the README there are also some faces which are the other way around, i.e. the faces are almost black while the background is white. This is probably due to the fact that most of images of the dataset feature a bright background while a minority does have a bright background.
+2. **Hair**: The hair color on the other side does not seem to be related neither to the background nor to the color of the head.
+3. **Eyes and Mouths**: Next off eyes and mouths arise. The eyes possess the complementary color of the head, which makes perfect sense, since they would not be visible otherwise. The evolution of the mouths is quite interesting: For almost every face the shape of the mouth oscillates between a more neutral/friendly smile and a big smile, where teeth are obsevable.
+4. **Complex Details**: Some of the pictures develop even more sophisticated details. We could observe generations where some of the persons wore glasses. In the demonstration on the README, one person (4<sup>th</sup> row, 1<sup>st</sup> column) seems to exhibit bangs toward the end of the animation. Sadly these animations are rare.
+
+##### Plots
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_stats.png "Stats")
 
-todo
-1. Random Noise -> Discriminator Learns
-2. Than Generator Learn
-3. Equilibirum and mutual change
+Lets look at the 3<sup>rd</sup> plot of the ones above. It describes the change of the learning rate; as mentioned before, in our case the learning rates depend on how well the networks do: the better one model does, the lower its learning rate while we increase the learning rate of the other network.
+
+In the first part of the training (0-50) one can clearly see that the discriminator is prioritized in terms of learning. This is due to the facts that at this point, it has not the closest idea what characteristica a real face exhibits. After it got to an acceptable level, the generator is prioritized (50-120); it's te Generators turn to learn what makes a face a face. Lastly, when both of them have reached a considerable level, them "converge" into equilibrium. 
+
+Note that this is not always the case. Often time it takes some tuning during the training process, since the non-linear nature of GANs make it quite easy to converge into bad values.
 
 ### Conclusion
 Finally, one can say that Generative Adversarial Networks implemented via Deep Convolution are a powerful and versatile tool. Although in our case we only generated images, there is no real limit to what it can do. Be it [Video](http://web.mit.edu/vondrick/tinyvideo/), Sound or [Text](https://arxiv.org/abs/1605.05396); after adjustments in the architecture they all can be done. 
 Altough our Network surely has room for improvement, the results are already convincing. There may be some samples which do not really look like a face, what indicates the Network mapped them out of the "face space". On the other hand, most of them do not only resemble a face, but a hard to discriminate even for the human eye. That fact alone makes this project a success in our book.
 
-# Related Work and Similar Approaches
-
-# Theoretical Basis and used Procedures
-
-# Performance Evaluation and Comparison
+# Todo:
+## Comparison
+## Related Work
