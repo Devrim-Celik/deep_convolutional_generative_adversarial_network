@@ -34,7 +34,7 @@ The only real difference to the real training process is that both Discriminator
 Traditional Generator and Discriminator models, as they were described in papers such as [Generative Adversarial Nets](https://arxiv.org/abs/1406.2661), were multilayer perceptron. A different angle of generating and discriminatring images is via convolution. 
 
 ##### Convolution
-[alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_convolution.png "Convolution")
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_convolution.gif "Convolution")
 
 todo
 
