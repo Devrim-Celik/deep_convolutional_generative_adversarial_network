@@ -331,7 +331,7 @@ if train:
 				G_lr_history.append(learn_rates[1])
 
 			# save samples documenting progress after n=sampleFreq batches
-			if save_fig: #and ((i+1)%sampleFreq == 0 or (i+1) == n_batches):
+			if save_fig: and ((i+1)%sampleFreq == 0 or (i+1) == n_batches):
 				# use z_sample to get sample images from generator
 				Gz_sample = sess.run(Gz, feed_dict={Z: z_sample}) 
 				merge_and_save(np.reshape(Gz_sample[0:25],[25,64,64]),[5,5],sample_dir+'/fig'+str(i+global_step)+'.png')
