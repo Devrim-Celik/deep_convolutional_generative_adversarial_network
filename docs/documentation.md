@@ -58,7 +58,7 @@ To showscase the idea of the zero-sum game, we can also say, that **g** tries to
 
 ## Network Structure and Design Choices
 
-##### Add Architecture Picture of DCGAN todo
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_architecture.png "Architecture")
 
 Our network architecture is a scaled down version inspired by [Radford et al. (2015)](https://arxiv.org/abs/1511.06434). We do not have such a powerful architecture since our data has lower dimensionality (64x64, grayscale not rgb). Additionally, CHANGEX: Training GAN is really hard since they are XXX.
 
@@ -117,7 +117,7 @@ The training process itself was quite intresting when considering which features
 3. **Eyes and Mouths**: Next off eyes and mouths arise. The eyes possess the complementary color of the head, which makes perfect sense, since they would not be visible otherwise. The evolution of the mouths is quite interesting: For almost every face the shape of the mouth oscillates between a more neutral/friendly smile and a big smile, where teeth are obsevable.
 4. **Complex Details**: Some of the pictures develop even more sophisticated details. We could observe generations where some of the persons wore glasses. In the demonstration on the README, one person (4<sup>th</sup> row, 1<sup>st</sup> column) seems to exhibit bangs toward the end of the animation. Sadly these animations are rare.
 
-##### Plots
+#### Plots
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_stats.png "Stats")
 
 Lets look at the 3<sup>rd</sup> plot of the ones above. It describes the change of the learning rate; as mentioned before, in our case the learning rates depend on how well the networks do: the better one model does, the lower its learning rate while we increase the learning rate of the other network.
