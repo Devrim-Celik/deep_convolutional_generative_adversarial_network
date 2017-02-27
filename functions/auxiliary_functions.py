@@ -83,14 +83,14 @@ def arg_parser(argv):
         arg_dict['train'] = True
         arg_dict['vis'] = True
 
-    # in case flag was provided without either "-train" or "-test"
-    if len(argv) > 1 and not ("-train" in argv or "-test" in argv): 
-        raise ValueError('You cannot provide a flag without either "-train" or "-test"')    
-    
     ########################## Help Flag
     # in case someone requests help, call "diplay_help()"
     if '--help' in argv:
         arg_dict['help'] = display_help()
+
+    # in case flag was provided without either "-train" or "-test"
+    if len(argv) > 1 and not ("-train" in argv or "-test" in argv): 
+        raise ValueError('You cannot provide a flag without either "-train" or "-test"')    
 
     ########################## Train Flag
     # if "-train" was provided, check for corresponding tags

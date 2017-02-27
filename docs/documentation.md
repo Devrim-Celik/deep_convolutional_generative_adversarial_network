@@ -58,7 +58,7 @@ To showscase the idea of the zero-sum game, we can also say, that **g** tries to
 
 ## Network Structure and Design Choices
 
-![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_architecture.png "Architecture")
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_architecture.png "GAN Architecture")
 
 Our network architecture is a scaled down version inspired by [Radford et al. (2015)](https://arxiv.org/abs/1511.06434). We do not have such a powerful architecture since our data has lower dimensionality (64x64, grayscale not rgb). Additionally, CHANGEX: Training GAN is really hard since they are XXX.
 
