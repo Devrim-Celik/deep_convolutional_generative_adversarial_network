@@ -58,7 +58,7 @@ To showscase the idea of the zero-sum game, we can also say, that **g** tries to
 
 ## Network Structure and Design Choices
 
-![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_architecture.png "GAN Architecture")
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_architecture.gif "GAN Architecture")
 
 Our network architecture is a scaled down version inspired by [Radford et al. (2015)](https://arxiv.org/abs/1511.06434). We do not have such a powerful architecture since our data has lower dimensionality (64x64, grayscale not rgb). Additionally, CHANGEX: Training GAN is really hard since they are XXX.
 
@@ -122,7 +122,7 @@ The training process itself was quite intresting when considering which features
 
 Lets look at the 3<sup>rd</sup> plot of the ones above. It describes the change of the learning rate; as mentioned before, in our case the learning rates depend on how well the networks do: the better one model does, the lower its learning rate while we increase the learning rate of the other network.
 
-In the first part of the training (0-50) one can clearly see that the discriminator is prioritized in terms of learning. This is due to the facts that at this point, it has not the closest idea what characteristica a real face exhibits. After it got to an acceptable level, the generator is prioritized (50-120); it's te Generators turn to learn what makes a face a face. Lastly, when both of them have reached a considerable level, them "converge" into equilibrium. 
+In the first part of the training (0-50) one can clearly see that the discriminator is prioritized in terms of learning. This is due to the facts that at this point, it has not the closest idea what characteristica a real face exhibits. After it got to an acceptable level, the generator is prioritized (50-120); it's the Generators turn to learn what makes a face a face. Lastly, when both of them have reached a considerable level, them "converge" into equilibrium. 
 
 Note that this is not always the case. Often time it takes some tuning during the training process, since the non-linear nature of GANs make it quite easy to converge into bad values.
 
