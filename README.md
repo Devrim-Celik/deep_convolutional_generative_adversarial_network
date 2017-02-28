@@ -82,7 +82,7 @@ If you want to see the results of the **Z-Interpolation**, provide the ```-z_int
 ```
 python3 dc_gan.py -test -z_int
 ```
-Furthermore, if you are interested in seeing the results of the **Z-Parameter Change**, provide the ```-z_change``` tag (see Documentation for information). As you can see in our documentary it enables you to iterate over one of the 100 parameter values. If you want to specify which parameter to change provide an integer between 1 and 100 as an additional argument. In case you do not a random values between 1 and 100 will be chosen. You won't be needing to provide an integer, since only one will be generated. The image will be saved in ```/save/figs```.
+Furthermore, if you are interested in seeing the results of the **Z-Parameter Change**, provide the ```-z_change``` tag (see Documentation for information). As you can see in our documentary it enables you to iterate over one of the 100 parameter values. If you want to specify which parameter to change provide an integer between 1 and 100 as an additional argument. In case you do not, a random values between 1 and 100 will be chosen. By default only one image will be generated (which is not changeable via arguments). The image will be saved in ```/save/figs```.
 ```
 python3 dc_gan.py -test -z_change
 python3 dc_gan.py -test -z_change 42
@@ -96,4 +96,4 @@ python3 dc_gan.py -train -test ...
 #### In case you need help: Just add the ```-- help``` tag!
 
 ## Contact
-In case you have questions or feedback, feel free to contact us via **random@mail.de**. Feel free to fork this repository.
+In case you have questions or feedback, feel free to contact us via **fake@mail.de**. Feel free to fork this repository.
