@@ -97,4 +97,3 @@ python3 dc_gan.py -train -test ...
 
 ## Contact
 In case you have questions or feedback, feel free to contact us via **random@mail.de**. Feel free to fork this repository.
-
