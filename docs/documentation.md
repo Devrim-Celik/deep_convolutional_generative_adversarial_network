@@ -1,9 +1,9 @@
 # Deep Convolutional Generative Adversarial Network - Documentation
 
 ## Task Description
-One of the tasks we did at our university required us to build a simple DCGAN, trained on [NMIST](http://yann.lecun.com/exdb/mnist/). Although impressed, we asked ourselfes how far we can come with a more challenging dataset. At the end we went for the [CelebA-Dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), since we, as humans, have a high standards for faces.
+One of the tasks we did at our university required us to build a simple DCGAN, trained on [NMIST](http://yann.lecun.com/exdb/mnist/). Although impressed, we asked ourselfes how far we can come with a more challenging dataset. At the end we went for the [CelebA-Dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), since we, as humans, have a high standard for faces.
 Next to that we also were interested how the **Z** vector is influencing the resulting image. The idea that the Generator is supposed to map this vector into a "space of faces" was quite astonishing and so we decided also to implement evaluation tools such as a **Z-interpolation**.
-Finally we hope that this repository served as guidance for students, such as we are, to better understead this fascinating model.
+Finally we hope that this repository serves as guidance for students, such as we are, to better understand this fascinating model.
 
 ## Introduction: What is a DCGAN
 Generative Adversarial Models are fairly new branch of unsupervised learning. Their goal is to generate samples (images, text, music, videos) which resembles their trainings-set. The remarkable thing is: It does **not reproduce** them; i.e. it generates images which were never there before.
