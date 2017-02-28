@@ -45,10 +45,10 @@ git clone https://github.com/D3vvy/iannwtf_DCGAN.git
 Note: Written for **Python 3**
 
 ## Instructions: Applying Preprocessing
-In case you want to use your own images, store them in ```/data/unprocessed_images```. Next of, execute the ```/functions/preprocessing_pickle.py``` script. It will preprocess those images and store them in a pickle file in ```/data/pickle```.
+In case you want to use your own images, store them in ```/data/unprocessed_images```. Next of, execute the ```/functions/preprocessing_pickle.py``` script. It will preprocess those images and store them in a pickle file in ```/data/pickle``` (by default, please name it ```celeba_input.dat```).
 
 ## Instructions: Training
-It is necessary to provide a pickle-file in  ```/data/pickle```. Either create it yourself or download it from the above link.
+It is necessary to provide a pickle-file in  ```/data/pickle```. Either create it yourself or download it from the above link and name it ```celeba_input.dat```, so the inbuild mechanisms apply.
 
 To simply train the network, just execute the file and provide the argument ```-train``` when doing so. At the end of any training process, the information plots will be stored in ```/save/figs```.
 ```
