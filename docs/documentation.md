@@ -41,7 +41,7 @@ As you can see in the [original paper](https://arxiv.org/abs/1511.06434v2) of th
 It is important to mention that our used dataset is already preprocessed, in sense that we used a cropped and aligned version of it.
 The first thing we did is to crop it into a quadratic form. Next off, we resize it into 64x64 and grayscale it; this is done due to the fact that we have limited computational power. We also map the grey values of the images from **0 - 255** to **-1 - 1**, due to the fact that the input unit (**Z** vector) is taken from a uniform distribution between these values. Finally, we add a third "empty dimension" for compatibility reasons.
 
-[alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_processed.jpg "Preprocessed Image")
+![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_processed.jpg "Preprocessed Image")
 
 The limitation in terms of resizing and grayscale is an important step since, even with it, we have 202000\*64<sup>2</sup>\*256 (**~200 billion**) values to work with.
 
