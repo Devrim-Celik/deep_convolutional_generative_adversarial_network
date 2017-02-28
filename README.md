@@ -48,7 +48,7 @@ Note: Written for **Python 3**
 In case you want to use your own images, store them in ```/data/unprocessed_images```. Next of, execute the ```/functions/preprocessing_pickle.py``` script. It will preprocess those images and store them in a pickle file in ```/data/pickle``` (by default, please name it ```celeba_input.dat```).
 
 ## Instructions: Training
-It is necessary to provide a pickle-file in  ```/data/pickle```. Either create it yourself or download it from the above link and name it ```celeba_input.dat```, so the inbuild mechanisms apply.
+It is necessary to provide a pickle-file in  ```/data/pickle```. Either create it yourself or download it from the above link and name it ```celeba_input.dat```, so the built-in mechanisms apply.
 
 To simply train the network, just execute the file and provide the argument ```-train``` when doing so. At the end of any training process, the information plots will be stored in ```/save/figs```.
 ```
@@ -58,7 +58,7 @@ By supplying ```-nbatch``` and an integer after that, you can change the number 
 ```
 python3 dc_gan.py -nbatch 5000
 ```
-In case you want to reload model-paramters and train on them (by default they have to be provided in ```/save/model```), provide the ```-load``` option. Models are saved in such a way that their are labeled with number of batches it took to create them. In the default case the model with the most batches will be taken. In case you want to start from a certain point in your trainings-process, just look up the number of the model and provide it as an additional argument after ```-load```.
+In case you want to reload model-parameters and train on them (by default they have to be provided in ```/save/model```), provide the ```-load``` option. Models are saved in such a way that their are labeled with number of batches it took to create them. In the default case the model with the most batches will be taken. In case you want to start from a certain point in your trainings-process, just look up the number of the model and provide it as an additional argument after ```-load```.
 ```
 python3 dc_gan.py -train -load
 python3 dc_gan.py -train -load 6436
@@ -73,7 +73,7 @@ python3 dc_gan.py -train -vis
 ## Instructions: Testing
 All of the following will need a model to test on. Just provide one (or multiple) models in the ```/save/model``` folder with the original name (the one they were created with). By default the most advanced one will be taken.
 
-In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` flag to generate a ```n*n``` picture (by default **5x5**, has to be between 1 and 8). The generated pictures will be saved in ```/my_imgs```.
+In case you want to generate pictures on a trained version (py providing weights in ```/save/model```) use the ``` -test n``` flag to generate a ```n*n``` picture (by default **5x5**, has to be between 1 and 8). The generated pictures will be saved in ```/save/figs```.
 ```
 python3 dc_gan.py -test
 python3 dc_gan.py -test 10
@@ -82,7 +82,7 @@ If you want to see the results of the **Z-Interpolation**, provide the ```-z_int
 ```
 python3 dc_gan.py -test -z_int
 ```
-Furthermore, if you are interested in seeing the results of the **Z-Paramter Change**, provide the ```-z_change``` tag (see Documentation for information). As you can see in our documentary it enables you to iterate over one of the 100 paramter values. If you want to specify which parameter to change provide an integer between 1 and 100 as an additional argument. In case you do not a random values between 1 and 100 will be chosen. You won't be needing to provide an integer, since only one will be generated. The image will be saved in ```/save/figs```.
+Furthermore, if you are interested in seeing the results of the **Z-Parameter Change**, provide the ```-z_change``` tag (see Documentation for information). As you can see in our documentary it enables you to iterate over one of the 100 parameter values. If you want to specify which parameter to change provide an integer between 1 and 100 as an additional argument. In case you do not a random values between 1 and 100 will be chosen. You won't be needing to provide an integer, since only one will be generated. The image will be saved in ```/save/figs```.
 ```
 python3 dc_gan.py -test -z_change
 python3 dc_gan.py -test -z_change 42
