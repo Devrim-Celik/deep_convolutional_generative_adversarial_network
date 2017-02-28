@@ -40,7 +40,7 @@ git clone https://github.com/D3vvy/iannwtf_DCGAN.git
 
 **Dataset**:
 - In this Deep Convolutional Generative Adversarial Network we used the cropped and alligned version of the CelebA Datset, available [here](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
-- If you just want to to train using a pickle file, you can download a preprocessed version of the dataset here TODO.
+- If you just want to to train using a pickle file, you can download a preprocessed version of the dataset [here](https://www.dropbox.com/sh/2ls6zf1qvdhfind/AAAYrGDpPKQ25YmrqEf-rR3_a?dl=0).
 
 Note: Written for **Python 3**
 
