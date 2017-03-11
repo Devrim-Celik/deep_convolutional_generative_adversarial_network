@@ -4,7 +4,7 @@ This is an implementation of a Deep Convolutional [Generative Adverserial Networ
 ## Demonstration
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_gif.gif "Training Progress")
 
-## Folders and Sripts
+## Folders and Scripts
 - Folders
     + ```/images-gifs```: Images and Gifs for displaying on Git-Hub
     + ```/data```: For storing data
