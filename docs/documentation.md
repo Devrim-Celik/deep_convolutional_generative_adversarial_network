@@ -24,11 +24,11 @@ The discriminator **d**'s task is to map **D<sup>d</sup> ==> {0,1}**. It will ge
 The reason for having these 2 models is to put them up against each other, i.e. **d** will try to "filter out" all generated sample **X<sub>fake</sub>** and recognize all real samples **X**. On the other hand **g** will try to create samples which closely resemble **X** so that **d** is not able to categorize them as fakes.
 
 ##### Analogy for the conceptual idea behind GANs
-Imagine a criminal (**Generator**) who is trying to counterfeit famous paintings to later sell them to a museum in his town. The museum on the other hand, has employed an famous art expert (**Discriminator**) whose salary depends on deciding whether a painting is real or a fake. This is a *zero-sum game* setup, i.e. the better the criminal does, the less money the art expert gets; and the better the art expert does in distinguishing between real and fake portrayals, the less money the criminal earn. By having this kind of competition, we can ensure both the criminal and the art expert will try their hardest. Even if the expert has found a solid way to discriminate fake and genuine pictures, the criminal will change his style until they again pass, at which point the expert will again try to improve himself and so on ...
+Imagine a criminal (**Generator**) who is trying to counterfeit famous paintings to later sell them to a museum in his town. The museum on the other hand, has employed an famous art expert (**Discriminator**) whose salary depends on deciding whether a painting is real or a fake. This is a *zero-sum game* setup, i.e. the better the criminal does, the less money the art expert gets; and the better the art expert does in distinguishing between real and fake portrayals, the less money the criminal earns. By having this kind of competition, we can ensure both the criminal and the art expert will try their hardest. Even if the expert has found a solid way to discriminate fake and genuine pictures, the criminal will change his style until they again pass, at which point the expert will again try to improve himself and so on ...
 The only real difference to the real training process is that both Discriminator and Generator are untrained at the start.
 
-#### Basics 3: What is a Deep Convolutional Generative Adversarial Model 
-Traditional Generator and Discriminator models, as they were described in papers such as [Generative Adversarial Nets](https://arxiv.org/abs/1406.2661), were multilayer perceptron. A different angle of generating and discriminating images is via convolution. 
+#### Basics 3: What is a Deep Convolutional Generative Adversarial Model
+Traditional Generator and Discriminator models, as they were described in papers such as [Generative Adversarial Nets](https://arxiv.org/abs/1406.2661), were multilayer perceptron. A different angle of generating and discriminating images is via convolution.
 
 ##### Convolution
 ![alt text](https://github.com/D3vvy/iannwtf_DCGAN/blob/master/images-gifs/showcase_convolution.gif "Convolution")
@@ -50,7 +50,7 @@ Again, when we talk about a generator **g** and a discriminator **d** we are tal
 
 First off **g** is provided with a vector **z**; the product of this input are *fake* images **g(z)**. This process can be done either via a the conventional way of a multilayer percepton or, as described above, with transposed convolution mapping this vector into the right format.
 
-On the other hand **d** has to be able to discriminate, i.e. we need to supply it with *real* and *fake* images. The fake images are the output of the generator and the real images are our trainings data **X**; usually the same amount of them is fed into **d**. 
+On the other hand **d** has to be able to discriminate, i.e. we need to supply it with *real* and *fake* images. The fake images are the output of the generator and the real images are our trainings data **X**; usually the same amount of them is fed into **d**.
 
 **d(X)** represents the probability of a sample **X** being a *real* image, while **d(g(z))** describes the probability of **g(z)** being a *real* image. This means it optimal for the discriminator to map **d(X)** as close to one and **d(g(z))** to zero as possible. One the other side, the generator optimally is able to generate image in such a way that **d(g(z))** is as close to 1 as possible (the discriminator is unable to differentiate between *real* and *fake*). This results in the following descriptive functions:
 
@@ -94,7 +94,7 @@ The game between discriminator and generator was hard to balance. We were not ab
 
 One question which intrigued us while building the Network was how the different parameters of the Z-vector influence the resulting images. To get some insight into it, we created a Z-vector and iterated over different values for only one of its 100 parameters while keeping the other 99 parameters. At the end we have 12 of those images (of cause it is possible to change in this code). In the visualization above you can see in total 8/12 of those images (iteration is done in the rows while columns are indicating different values for one parameter).
 
-What we can see here is firstly, that the value of every parameter influences the background if it is big enough, which makes sense. 
+What we can see here is firstly, that the value of every parameter influences the background if it is big enough, which makes sense.
 
 In the first row of the first sample image it is also recognizable that this parameter influences the gender of the generated face, the higher this value gets (more to the right) the more masculine the face gets (although the hair still is feminine).
 
@@ -125,10 +125,10 @@ The training process itself was quite interesting when considering which feature
 
 Lets look at the 3<sup>rd</sup> plot of the ones above. It describes the change of the learning rate; as mentioned before, in our case the learning rates depend on how well the networks do: the better one model does, the lower its learning rate while we increase the learning rate of the other network.
 
-In the first part of the training (0-50) one can clearly see that the discriminator is prioritized in terms of learning. This is due to the facts that at this point, it has not the closest idea what characteristics a real face exhibits. After it got to an acceptable level, the generator is prioritized (50-120); it's the Generators turn to learn what makes a face a face. Lastly, when both of them have reached a considerable level, them "converge" into equilibrium. 
+In the first part of the training (0-50) one can clearly see that the discriminator is prioritized in terms of learning. This is due to the facts that at this point, it has not the closest idea what characteristics a real face exhibits. After it got to an acceptable level, the generator is prioritized (50-120); it's the Generators turn to learn what makes a face a face. Lastly, when both of them have reached a considerable level, them "converge" into equilibrium.
 
 Note that this is not always the case. Often time it takes some tuning during the training process, since the non-linear nature of GANs make it quite easy to converge into bad values.
 
 ### Conclusion
-Finally, one can say that Generative Adversarial Networks implemented via Deep Convolution are a powerful and versatile tool. Although in our case we only generated images, there is no real limit to what it can do. Be it [Video](http://web.mit.edu/vondrick/tinyvideo/), Sound or [Text](https://arxiv.org/abs/1605.05396); after adjustments in the architecture they all can be done. 
+Finally, one can say that Generative Adversarial Networks implemented via Deep Convolution are a powerful and versatile tool. Although in our case we only generated images, there is no real limit to what it can do. Be it [Video](http://web.mit.edu/vondrick/tinyvideo/), Sound or [Text](https://arxiv.org/abs/1605.05396); after adjustments in the architecture they all can be done.
 Although our Network surely has room for improvement, the results are already convincing. There may be some samples which do not really look like a face, what indicates the Network mapped them out of the "face space". On the other hand, most of them do not only resemble a face, but a hard to discriminate even for the human eye. That fact alone makes this project a success in our book.
